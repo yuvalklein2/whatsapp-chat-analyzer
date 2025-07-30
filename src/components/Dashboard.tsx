@@ -107,9 +107,14 @@ export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
     <div className="space-y-8">
       <StatsCards analyticsData={analyticsData} chatData={chatData} />
       
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Choose Your Charts</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
+            Choose Your Visualizations
+          </h2>
+          <p className="text-gray-600 font-medium">Select the insights you want to explore</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
           {chartOptions.map((option) => {
             const Icon = option.icon;
             const isSelected = selectedCharts.includes(option.id);
@@ -119,40 +124,77 @@ export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
                 key={option.id}
                 onClick={() => toggleChart(option.id)}
                 className={`
-                  p-4 rounded-lg border-2 transition-all text-left
+                  group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105
                   ${isSelected 
-                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                    ? 'border-blue-400/50 bg-gradient-to-br from-blue-50/80 to-purple-50/80 shadow-lg' 
+                    : 'border-gray-200/50 bg-white/40 hover:border-blue-300/50 hover:bg-gradient-to-br hover:from-blue-50/40 hover:to-purple-50/40 hover:shadow-md'
                   }
                 `}
               >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Icon className={`h-5 w-5 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`} />
-                  <span className="font-medium">{option.name}</span>
+                <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                  isSelected ? 'bg-gradient-to-br from-blue-100/20 to-purple-100/20' : 'bg-gradient-to-br from-blue-50/20 to-purple-50/20'
+                }`}></div>
+                
+                <div className="relative">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`p-2 rounded-xl transition-all duration-300 ${
+                      isSelected 
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg' 
+                        : 'bg-gray-100 group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-600'
+                    }`}>
+                      <Icon className={`h-5 w-5 transition-colors duration-300 ${
+                        isSelected ? 'text-white' : 'text-gray-500 group-hover:text-white'
+                      }`} />
+                    </div>
+                    <span className={`font-bold transition-colors duration-300 ${
+                      isSelected ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
+                    }`}>
+                      {option.name}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{option.description}</p>
                 </div>
-                <p className="text-sm text-gray-600">{option.description}</p>
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {selectedCharts.map((chartType) => (
-          <div key={chartType} className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {chartOptions.find(opt => opt.id === chartType)?.name}
-            </h3>
-            {renderChart(chartType)}
-          </div>
-        ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {selectedCharts.map((chartType) => {
+          const chartOption = chartOptions.find(opt => opt.id === chartType);
+          const Icon = chartOption?.icon;
+          
+          return (
+            <div key={chartType} className="group bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-purple-50/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative">
+                <div className="flex items-center space-x-4 mb-6">
+                  {Icon && (
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl shadow-lg">
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                  )}
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    {chartOption?.name}
+                  </h3>
+                </div>
+                {renderChart(chartType)}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {selectedCharts.length === 0 && (
-        <div className="bg-gray-50 rounded-lg p-12 text-center">
-          <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Charts Selected</h3>
-          <p className="text-gray-600">Choose one or more chart types above to visualize your chat data.</p>
+        <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-16 text-center border border-gray-200/50 shadow-lg">
+          <div className="relative inline-block mb-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-3xl blur-xl opacity-20 scale-110"></div>
+            <BarChart3 className="relative h-16 w-16 text-gray-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">No Visualizations Selected</h3>
+          <p className="text-lg text-gray-600 font-medium">Choose chart types above to explore your conversation insights.</p>
         </div>
       )}
     </div>

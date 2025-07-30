@@ -7,7 +7,7 @@ import FormatHelper from '@/components/FormatHelper';
 import { WhatsAppParser } from '@/utils/whatsappParser';
 import { ChatAnalytics } from '@/utils/analytics';
 import { ChatData, AnalyticsData } from '@/types/chat';
-import { MessageSquare, BarChart3 } from 'lucide-react';
+import { MessageSquare, BarChart3, Timer, Users, Zap } from 'lucide-react';
 
 export default function HomePage() {
   const [chatData, setChatData] = useState<ChatData | null>(null);
@@ -46,37 +46,56 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <header className="relative backdrop-blur-xl bg-white/70 border-b border-gray-200/50 supports-[backdrop-filter]:bg-white/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-3">
-              <MessageSquare className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">WhatsApp Chat Analyzer</h1>
+          <div className="flex justify-between items-center py-8">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-lg opacity-20"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-2xl shadow-lg">
+                  <MessageSquare className="h-7 w-7 text-white" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent tracking-tight">
+                  WhatsApp Chat Analyzer
+                </h1>
+                <p className="text-sm text-gray-500 font-medium">Tableau for your conversations</p>
+              </div>
             </div>
             {chatData && (
               <button
                 onClick={handleReset}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="group relative px-6 py-3 bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300 hover:scale-105"
               >
-                Analyze New Chat
+                <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">
+                  Analyze New Chat
+                </span>
               </button>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {!chatData ? (
-          <div className="space-y-8">
-            <div className="text-center">
-              <BarChart3 className="mx-auto h-12 w-12 text-gray-400" />
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
-                Analyze Your WhatsApp Conversations
+          <div className="space-y-12">
+            <div className="text-center relative">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-3xl blur-2xl opacity-20 scale-110"></div>
+                <BarChart3 className="relative mx-auto h-16 w-16 text-gray-400" />
+              </div>
+              <h2 className="mt-8 text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight">
+                Analyze Your WhatsApp
+                <br />
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Conversations
+                </span>
               </h2>
-              <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                Upload your WhatsApp chat export and get beautiful insights about your conversations. 
-                See message patterns, participant activity, popular words, and more with interactive charts.
+              <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
+                Transform your chat exports into beautiful, interactive insights. 
+                Discover patterns, relationships, and hidden stories in your conversations.
               </p>
             </div>
             
@@ -99,36 +118,66 @@ export default function HomePage() {
               </div>
             )}
             
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Interactive Charts</h4>
-                  <p className="text-gray-600">
-                    Choose from multiple chart types to visualize your data: timeline charts, 
-                    participant breakdowns, word frequency analysis, and hourly activity patterns.
-                  </p>
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Powerful Features</h3>
+                <p className="text-gray-600 font-medium">Everything you need to understand your conversations</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="group relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <BarChart3 className="h-6 w-6 text-white" />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">Interactive Charts</h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      Choose from 7 beautiful chart types: timeline analysis, response times, 
+                      emoji patterns, conversation starters, and more. Tableau-style interactivity.
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Smart Analytics</h4>
-                  <p className="text-gray-600">
-                    Get detailed insights about your conversations including message frequency, 
-                    most active times, conversation participants, and commonly used words.
-                  </p>
+
+                <div className="group relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <Timer className="h-6 w-6 text-white" />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">Smart Analytics</h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      Deep insights into response times, conversation patterns, emoji usage, 
+                      word frequency, and relationship dynamics. Discover hidden stories.
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Privacy First</h4>
-                  <p className="text-gray-600">
-                    All processing happens locally in your browser. Your chat data never leaves 
-                    your device, ensuring complete privacy and security.
-                  </p>
+
+                <div className="group relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <Users className="h-6 w-6 text-white" />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">Privacy First</h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      All processing happens locally in your browser. Your chat data never leaves 
+                      your device. Zero servers, zero data collection. Complete privacy guaranteed.
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Easy to Use</h4>
-                  <p className="text-gray-600">
-                    Simply export your WhatsApp chat as a text file and drag it here. 
-                    No technical knowledge required - get insights in seconds.
-                  </p>
+
+                <div className="group relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-red-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <Zap className="h-6 w-6 text-white" />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">Effortlessly Simple</h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      Just drag and drop your WhatsApp export file. No complex setup, 
+                      no technical knowledge required. Beautiful insights in seconds.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
