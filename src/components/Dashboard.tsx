@@ -119,10 +119,10 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           {showMultiGraph && (
             <button
               onClick={() => setShowMultiGraph(false)}
-              className="group flex items-center space-x-2 px-4 py-2 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300"
+              className="group flex items-center space-x-2 px-5 py-3 bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300 hover:scale-105"
             >
-              <ChevronLeft className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-semibold text-gray-700">Back to Overview</span>
+              <ChevronLeft className="h-4 w-4 text-gray-600 group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">Back to Overview</span>
             </button>
           )}
           <div>
@@ -142,10 +142,12 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           {!showMultiGraph && (
             <button
               onClick={() => setShowMultiGraph(true)}
-              className="group flex items-center space-x-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:ring-offset-2 transition-all duration-300"
+              className="group relative overflow-hidden flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:ring-offset-2 transition-all duration-300"
             >
-              <Grid3X3 className="h-5 w-5" />
-              <span className="font-semibold">Multi-Graph</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Grid3X3 className="relative h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+              <span className="relative font-semibold">Multi-Graph</span>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-rose-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
             </button>
           )}
           
@@ -184,16 +186,20 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                 key={option.id}
                 onClick={() => toggleChart(option.id)}
                 className={`
-                  group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105
+                  group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:-translate-y-1
                   ${isSelected 
-                    ? 'border-blue-400/50 bg-gradient-to-br from-blue-50/80 to-purple-50/80 shadow-lg' 
-                    : 'border-gray-200/50 bg-white/40 hover:border-blue-300/50 hover:bg-gradient-to-br hover:from-blue-50/40 hover:to-purple-50/40 hover:shadow-md'
+                    ? 'border-blue-400/50 bg-gradient-to-br from-blue-50/80 to-purple-50/80 shadow-xl' 
+                    : 'border-gray-200/50 bg-white/50 hover:border-blue-300/50 hover:bg-gradient-to-br hover:from-blue-50/40 hover:to-purple-50/40 hover:shadow-lg'
                   }
                 `}
               >
                 <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
                   isSelected ? 'bg-gradient-to-br from-blue-100/20 to-purple-100/20' : 'bg-gradient-to-br from-blue-50/20 to-purple-50/20'
                 }`}></div>
+                
+                {isSelected && (
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur opacity-20 -z-10"></div>
+                )}
                 
                 <div className="relative">
                   <div className="flex items-center space-x-3 mb-3">
