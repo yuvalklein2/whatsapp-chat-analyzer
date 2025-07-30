@@ -4,6 +4,10 @@ import { parse } from 'date-fns';
 export class WhatsAppParser {
   // Multiple regex patterns to handle different WhatsApp export formats
   private static readonly MESSAGE_PATTERNS = [
+    // Format: [DD.MM.YYYY, HH:MM:SS] Name: Message (Hebrew/Israeli format)
+    /^\[(\d{1,2}\.\d{1,2}\.\d{4}),\s+(\d{1,2}:\d{2}:\d{2})\]\s*([^:]+?):\s*(.*)$/,
+    // Format: [DD.MM.YY, HH:MM:SS] Name: Message (Hebrew/Israeli format short year)
+    /^\[(\d{1,2}\.\d{1,2}\.\d{2}),\s+(\d{1,2}:\d{2}:\d{2})\]\s*([^:]+?):\s*(.*)$/,
     // Format: MM/DD/YY, HH:MM - Name: Message
     /^(\d{1,2}\/\d{1,2}\/\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AaPp][Mm])?)\s*[-–]\s*([^:]+?):\s*(.*)$/,
     // Format: [MM/DD/YY, HH:MM:SS] Name: Message
@@ -17,6 +21,8 @@ export class WhatsAppParser {
   ];
   
   private static readonly SYSTEM_MESSAGE_PATTERNS = [
+    // Format: [DD.MM.YYYY, HH:MM:SS] System message (Hebrew/Israeli format)
+    /^\[(\d{1,2}\.\d{1,2}\.\d{4}),\s+(\d{1,2}:\d{2}:\d{2})\]\s*([^:]*?):\s*(.*)$/,
     // System messages (no username)
     /^(\d{1,2}\/\d{1,2}\/\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AaPp][Mm])?)\s*[-–]\s*(.*)$/,
     /^\[(\d{1,2}\/\d{1,2}\/\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AaPp][Mm])?)\]\s*(.*)$/,
@@ -139,17 +145,27 @@ export class WhatsAppParser {
   private static parseTimestamp(dateStr: string, timeStr: string, patternIndex: number): Date {
     // Clean and prepare date string based on pattern
     let cleanDate = dateStr;
-    if (patternIndex === 2) {
+    let isEuropeanDotFormat = false;
+    
+    if (patternIndex === 0 || patternIndex === 1) {
+      // Hebrew/Israeli format [DD.MM.YYYY] - keep dots, it's European format
+      cleanDate = dateStr;
+      isEuropeanDotFormat = true;
+    } else if (patternIndex === 2) {
       // European format with dots, convert to slashes
       cleanDate = dateStr.replace(/\./g, '/');
     } else {
-      // Remove any non-digit/slash characters
+      // Remove any non-digit/slash/dot characters
       cleanDate = dateStr.replace(/[^\d\/\.]/g, '');
     }
     
     const cleanTime = timeStr.trim();
     
-    const dateFormats = [
+    const dateFormats = isEuropeanDotFormat ? [
+      // European dot formats (DD.MM.YYYY)
+      'd.M.yyyy', 'dd.M.yyyy', 'd.MM.yyyy', 'dd.MM.yyyy',
+      'd.M.yy', 'dd.M.yy', 'd.MM.yy', 'dd.MM.yy'
+    ] : [
       // US formats
       'M/d/yy', 'M/d/yyyy', 'MM/dd/yy', 'MM/dd/yyyy',
       // European formats  
