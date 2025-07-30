@@ -23,4 +23,16 @@ export interface AnalyticsData {
   averageMessageLength: number;
   mostActiveDay: string;
   mostActiveHour: number;
+  responseTimeAnalysis: {
+    averageResponseTimeMinutes: number;
+    responseTimesByParticipant: { name: string; avgResponseMinutes: number; totalResponses: number }[];
+    fastestResponder: string;
+    slowestResponder: string;
+  };
+  conversationStarters: { name: string; count: number; percentage: number }[];
+  emojiAnalysis: {
+    totalEmojis: number;
+    topEmojis: { emoji: string; count: number }[];
+    emojisByParticipant: { name: string; count: number }[];
+  };
 }

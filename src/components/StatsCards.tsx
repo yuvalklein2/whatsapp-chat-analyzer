@@ -1,7 +1,7 @@
 'use client';
 
 import { AnalyticsData, ChatData } from '@/types/chat';
-import { MessageCircle, Users, Calendar, TrendingUp } from 'lucide-react';
+import { MessageCircle, Users, Calendar, TrendingUp, Timer, Zap, Smile } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface StatsCardsProps {
@@ -10,6 +10,20 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ analyticsData, chatData }: StatsCardsProps) {
+  const formatResponseTime = (minutes: number) => {
+    if (minutes < 60) {
+      return `${Math.round(minutes)}m`;
+    } else if (minutes < 1440) {
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.round(minutes % 60);
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    } else {
+      const days = Math.floor(minutes / 1440);
+      const hours = Math.floor((minutes % 1440) / 60);
+      return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+    }
+  };
+
   const stats = [
     {
       name: 'Total Messages',
@@ -26,18 +40,18 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
       bgColor: 'bg-green-50'
     },
     {
-      name: 'Days Active',
-      value: analyticsData.messagesByDay.length.toString(),
-      icon: Calendar,
+      name: 'Avg Response Time',
+      value: formatResponseTime(analyticsData.responseTimeAnalysis.averageResponseTimeMinutes),
+      icon: Timer,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50'
     },
     {
-      name: 'Avg Message Length',
-      value: `${analyticsData.averageMessageLength} chars`,
-      icon: TrendingUp,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      name: 'Total Emojis',
+      value: analyticsData.emojiAnalysis.totalEmojis.toLocaleString(),
+      icon: Smile,
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-50'
     }
   ];
 
@@ -68,7 +82,7 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
       
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Chat Overview</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <p className="text-sm font-medium text-gray-600">Date Range</p>
             <p className="text-lg text-gray-900">
@@ -77,16 +91,23 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
           </div>
           
           <div>
-            <p className="text-sm font-medium text-gray-600">Most Active Day</p>
+            <p className="text-sm font-medium text-gray-600">Fastest Responder</p>
             <p className="text-lg text-gray-900">
-              {analyticsData.mostActiveDay ? format(new Date(analyticsData.mostActiveDay), 'EEEE, MMM d') : 'N/A'}
+              {analyticsData.responseTimeAnalysis.fastestResponder}
             </p>
           </div>
           
           <div>
-            <p className="text-sm font-medium text-gray-600">Most Active Hour</p>
+            <p className="text-sm font-medium text-gray-600">Top Conversation Starter</p>
             <p className="text-lg text-gray-900">
-              {analyticsData.mostActiveHour}:00 - {analyticsData.mostActiveHour + 1}:00
+              {analyticsData.conversationStarters[0]?.name || 'N/A'}
+            </p>
+          </div>
+          
+          <div>
+            <p className="text-sm font-medium text-gray-600">Most Used Emoji</p>
+            <p className="text-lg text-gray-900">
+              {analyticsData.emojiAnalysis.topEmojis[0]?.emoji || 'N/A'} ({analyticsData.emojiAnalysis.topEmojis[0]?.count || 0})
             </p>
           </div>
         </div>

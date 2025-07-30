@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { AnalyticsData, ChatData } from '@/types/chat';
-import { BarChart3, Clock, Calendar, Users, MessageSquare } from 'lucide-react';
+import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile } from 'lucide-react';
 import MessagesByDayChart from './charts/MessagesByDayChart';
 import MessagesByHourChart from './charts/MessagesByHourChart';
 import MessagesByParticipantChart from './charts/MessagesByParticipantChart';
 import WordFrequencyChart from './charts/WordFrequencyChart';
+import ResponseTimeChart from './charts/ResponseTimeChart';
+import ConversationStartersChart from './charts/ConversationStartersChart';
+import EmojiAnalysisChart from './charts/EmojiAnalysisChart';
 import StatsCards from './StatsCards';
 
 interface DashboardProps {
@@ -14,7 +17,7 @@ interface DashboardProps {
   chatData: ChatData;
 }
 
-type ChartType = 'messagesByDay' | 'messagesByHour' | 'messagesByParticipant' | 'wordFrequency';
+type ChartType = 'messagesByDay' | 'messagesByHour' | 'messagesByParticipant' | 'wordFrequency' | 'responseTime' | 'conversationStarters' | 'emojiAnalysis';
 
 interface ChartOption {
   id: ChartType;
@@ -43,6 +46,24 @@ const chartOptions: ChartOption[] = [
     description: 'Message count breakdown by participant'
   },
   {
+    id: 'responseTime',
+    name: 'Response Time Analysis',
+    icon: Timer,
+    description: 'How quickly people respond to messages'
+  },
+  {
+    id: 'conversationStarters',
+    name: 'Conversation Starters',
+    icon: Zap,
+    description: 'Who initiates conversations most often'
+  },
+  {
+    id: 'emojiAnalysis',
+    name: 'Emoji Analysis',
+    icon: Smile,
+    description: 'Most frequently used emojis'
+  },
+  {
     id: 'wordFrequency',
     name: 'Word Frequency',
     icon: MessageSquare,
@@ -51,7 +72,7 @@ const chartOptions: ChartOption[] = [
 ];
 
 export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
-  const [selectedCharts, setSelectedCharts] = useState<ChartType[]>(['messagesByDay', 'messagesByParticipant']);
+  const [selectedCharts, setSelectedCharts] = useState<ChartType[]>(['messagesByDay', 'responseTime', 'conversationStarters']);
 
   const toggleChart = (chartId: ChartType) => {
     setSelectedCharts(prev => 
@@ -69,6 +90,12 @@ export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
         return <MessagesByHourChart data={analyticsData.messagesByHour} />;
       case 'messagesByParticipant':
         return <MessagesByParticipantChart data={analyticsData.messagesByParticipant} />;
+      case 'responseTime':
+        return <ResponseTimeChart data={analyticsData.responseTimeAnalysis.responseTimesByParticipant} />;
+      case 'conversationStarters':
+        return <ConversationStartersChart data={analyticsData.conversationStarters} />;
+      case 'emojiAnalysis':
+        return <EmojiAnalysisChart data={analyticsData.emojiAnalysis.topEmojis} />;
       case 'wordFrequency':
         return <WordFrequencyChart data={analyticsData.wordFrequency} />;
       default:

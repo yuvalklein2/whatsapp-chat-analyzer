@@ -12,6 +12,9 @@ export class ChatAnalytics {
     const averageMessageLength = this.getAverageMessageLength(messages);
     const mostActiveDay = this.getMostActiveDay(messagesByDay);
     const mostActiveHour = this.getMostActiveHour(messagesByHour);
+    const responseTimeAnalysis = this.getResponseTimeAnalysis(messages);  
+    const conversationStarters = this.getConversationStarters(messages);
+    const emojiAnalysis = this.getEmojiAnalysis(messages);
 
     return {
       messagesByDay,
@@ -20,7 +23,10 @@ export class ChatAnalytics {
       wordFrequency,
       averageMessageLength,
       mostActiveDay,
-      mostActiveHour
+      mostActiveHour,
+      responseTimeAnalysis,
+      conversationStarters,
+      emojiAnalysis
     };
   }
 
@@ -107,5 +113,135 @@ export class ChatAnalytics {
       current.count > max.count ? current : max, 
       { hour: 0, count: 0 }
     ).hour;
+  }
+
+  private static getResponseTimeAnalysis(messages: Message[]) {
+    const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
+    const responseTimes: { participant: string; responseTimeMinutes: number }[] = [];
+    
+    for (let i = 1; i < nonSystemMessages.length; i++) {
+      const currentMessage = nonSystemMessages[i];
+      const previousMessage = nonSystemMessages[i - 1];
+      
+      // Only count as response if different participants
+      if (currentMessage.author !== previousMessage.author) {
+        const timeDiff = currentMessage.timestamp.getTime() - previousMessage.timestamp.getTime();
+        const minutes = timeDiff / (1000 * 60);
+        
+        // Only count responses within 24 hours (1440 minutes)
+        if (minutes <= 1440) {
+          responseTimes.push({
+            participant: currentMessage.author,
+            responseTimeMinutes: minutes
+          });
+        }
+      }
+    }
+
+    // Calculate averages by participant
+    const participantResponseTimes = new Map<string, { total: number; count: number }>();
+    
+    responseTimes.forEach(({ participant, responseTimeMinutes }) => {
+      const existing = participantResponseTimes.get(participant) || { total: 0, count: 0 };
+      participantResponseTimes.set(participant, {
+        total: existing.total + responseTimeMinutes,
+        count: existing.count + 1
+      });
+    });
+
+    const responseTimesByParticipant = Array.from(participantResponseTimes.entries())
+      .map(([name, data]) => ({
+        name,
+        avgResponseMinutes: Math.round(data.total / data.count),
+        totalResponses: data.count
+      }))
+      .sort((a, b) => a.avgResponseMinutes - b.avgResponseMinutes);
+
+    const averageResponseTimeMinutes = responseTimes.length > 0 
+      ? Math.round(responseTimes.reduce((sum, r) => sum + r.responseTimeMinutes, 0) / responseTimes.length)
+      : 0;
+
+    const fastestResponder = responseTimesByParticipant[0]?.name || 'N/A';
+    const slowestResponder = responseTimesByParticipant[responseTimesByParticipant.length - 1]?.name || 'N/A';
+
+    return {
+      averageResponseTimeMinutes,
+      responseTimesByParticipant,
+      fastestResponder,
+      slowestResponder
+    };
+  }
+
+  private static getConversationStarters(messages: Message[]) {
+    const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
+    const conversationStarts = new Map<string, number>();
+    
+    // First message is always a conversation starter
+    if (nonSystemMessages.length > 0) {
+      const firstAuthor = nonSystemMessages[0].author;
+      conversationStarts.set(firstAuthor, 1);
+    }
+    
+    // Look for conversation starters (messages after >30 minute gaps)
+    for (let i = 1; i < nonSystemMessages.length; i++) {
+      const currentMessage = nonSystemMessages[i];
+      const previousMessage = nonSystemMessages[i - 1];
+      
+      const timeDiff = currentMessage.timestamp.getTime() - previousMessage.timestamp.getTime();
+      const minutes = timeDiff / (1000 * 60);
+      
+      // Consider it a new conversation if >30 minutes gap
+      if (minutes > 30) {
+        const count = conversationStarts.get(currentMessage.author) || 0;
+        conversationStarts.set(currentMessage.author, count + 1);
+      }
+    }
+
+    const totalStarts = Array.from(conversationStarts.values()).reduce((sum, count) => sum + count, 0);
+    
+    return Array.from(conversationStarts.entries())
+      .map(([name, count]) => ({
+        name,
+        count,
+        percentage: Math.round((count / totalStarts) * 100)
+      }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  private static getEmojiAnalysis(messages: Message[]) {
+    const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
+    const emojiRegex = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+    
+    const allEmojis: string[] = [];
+    const emojisByParticipant = new Map<string, number>();
+    
+    nonSystemMessages.forEach(message => {
+      const emojis = message.content.match(emojiRegex) || [];
+      allEmojis.push(...emojis);
+      
+      const participantCount = emojisByParticipant.get(message.author) || 0;
+      emojisByParticipant.set(message.author, participantCount + emojis.length);
+    });
+
+    // Count emoji frequency
+    const emojiCount = new Map<string, number>();
+    allEmojis.forEach(emoji => {
+      emojiCount.set(emoji, (emojiCount.get(emoji) || 0) + 1);
+    });
+
+    const topEmojis = Array.from(emojiCount.entries())
+      .map(([emoji, count]) => ({ emoji, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const emojisByParticipantArray = Array.from(emojisByParticipant.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      totalEmojis: allEmojis.length,
+      topEmojis,
+      emojisByParticipant: emojisByParticipantArray
+    };
   }
 }
