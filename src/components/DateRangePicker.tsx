@@ -56,7 +56,7 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
               </div>
               
               <div className="space-y-2">
-                {presets.map((preset, index) => {
+                {presets.map((preset) => {
                   const isSelected = preset.label === selectedRange.label;
                   
                   return (

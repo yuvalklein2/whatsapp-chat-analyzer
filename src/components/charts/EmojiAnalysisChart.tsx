@@ -10,20 +10,26 @@ export default function EmojiAnalysisChart({ data }: EmojiAnalysisChartProps) {
   const topEmojis = data.slice(0, 10);
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={350}>
       <BarChart data={topEmojis}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           dataKey="emoji" 
-          tick={{ fontSize: 16 }}
-          height={50}
+          tick={{ fontSize: 24 }}
+          height={60}
+          interval={0}
         />
         <YAxis 
           tick={{ fontSize: 12 }}
         />
         <Tooltip 
           formatter={(value: number) => [value, 'Uses']}
-          labelFormatter={(label) => `${label} emoji`}
+          labelFormatter={(label) => (
+            <div className="flex items-center space-x-2">
+              <span style={{ fontSize: '32px' }}>{label}</span>
+              <span>emoji</span>
+            </div>
+          )}
           itemStyle={{ color: '#1F2937' }}
           contentStyle={{ 
             backgroundColor: '#F9FAFB', 

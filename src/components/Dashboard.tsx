@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AnalyticsData, ChatData, DateRange } from '@/types/chat';
 import { ChatAnalytics } from '@/utils/analytics';
-import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile } from 'lucide-react';
+import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile, Grid3X3, ChevronLeft } from 'lucide-react';
 import MessagesByDayChart from './charts/MessagesByDayChart';
 import MessagesByHourChart from './charts/MessagesByHourChart';
 import MessagesByParticipantChart from './charts/MessagesByParticipantChart';
@@ -13,6 +13,7 @@ import ConversationStartersChart from './charts/ConversationStartersChart';
 import EmojiAnalysisChart from './charts/EmojiAnalysisChart';
 import StatsCards from './StatsCards';
 import DateRangePicker from './DateRangePicker';
+import MultiGraphManager from './MultiGraphManager';
 
 interface DashboardProps {
   analyticsData: AnalyticsData;
@@ -77,6 +78,7 @@ const chartOptions: ChartOption[] = [
 
 export default function Dashboard({ analyticsData, chatData, selectedDateRange, onDateRangeChange }: DashboardProps) {
   const [selectedCharts, setSelectedCharts] = useState<ChartType[]>(['messagesByDay', 'responseTime', 'conversationStarters']);
+  const [showMultiGraph, setShowMultiGraph] = useState(false);
   
   const dateRangePresets = ChatAnalytics.getDateRangePresets(chatData);
 
@@ -113,25 +115,59 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
     <div className="space-y-8">
       {/* Header with Date Range Picker */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-            Conversation Analytics
-          </h1>
-          <p className="text-gray-600 font-medium mt-1">
-            Showing {analyticsData.filteredMessageCount.toLocaleString()} of {analyticsData.totalMessageCount.toLocaleString()} messages
-          </p>
+        <div className="flex items-center space-x-4">
+          {showMultiGraph && (
+            <button
+              onClick={() => setShowMultiGraph(false)}
+              className="group flex items-center space-x-2 px-4 py-2 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300"
+            >
+              <ChevronLeft className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-semibold text-gray-700">Back to Overview</span>
+            </button>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              {showMultiGraph ? 'Multi-Graph Comparison' : 'Conversation Analytics'}
+            </h1>
+            <p className="text-gray-600 font-medium mt-1">
+              {showMultiGraph 
+                ? 'Compare insights across different time periods'
+                : `Showing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} messages`
+              }
+            </p>
+          </div>
         </div>
         
-        <DateRangePicker
-          selectedRange={selectedDateRange}
-          presets={dateRangePresets}
-          onRangeChange={onDateRangeChange}
-        />
+        <div className="flex items-center space-x-3">
+          {!showMultiGraph && (
+            <button
+              onClick={() => setShowMultiGraph(true)}
+              className="group flex items-center space-x-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:ring-offset-2 transition-all duration-300"
+            >
+              <Grid3X3 className="h-5 w-5" />
+              <span className="font-semibold">Multi-Graph</span>
+            </button>
+          )}
+          
+          {!showMultiGraph && (
+            <DateRangePicker
+              selectedRange={selectedDateRange}
+              presets={dateRangePresets}
+              onRangeChange={onDateRangeChange}
+            />
+          )}
+        </div>
       </div>
 
-      <StatsCards analyticsData={analyticsData} chatData={chatData} />
-      
-      <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg">
+      {showMultiGraph ? (
+        <MultiGraphManager 
+          chatData={chatData} 
+        />
+      ) : (
+        <>
+          <StatsCards analyticsData={analyticsData} chatData={chatData} />
+          
+          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
             Choose Your Visualizations
@@ -211,15 +247,17 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         })}
       </div>
 
-      {selectedCharts.length === 0 && (
-        <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-16 text-center border border-gray-200/50 shadow-lg">
-          <div className="relative inline-block mb-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-3xl blur-xl opacity-20 scale-110"></div>
-            <BarChart3 className="relative h-16 w-16 text-gray-400" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">No Visualizations Selected</h3>
-          <p className="text-lg text-gray-600 font-medium">Choose chart types above to explore your conversation insights.</p>
-        </div>
+          {selectedCharts.length === 0 && (
+            <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-16 text-center border border-gray-200/50 shadow-lg">
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-3xl blur-xl opacity-20 scale-110"></div>
+                <BarChart3 className="relative h-16 w-16 text-gray-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Visualizations Selected</h3>
+              <p className="text-lg text-gray-600 font-medium">Choose chart types above to explore your conversation insights.</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

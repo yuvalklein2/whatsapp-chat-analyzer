@@ -2,7 +2,8 @@
 
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, Archive } from 'lucide-react';
+import JSZip from 'jszip';
 
 interface FileUploadProps {
   onFileUpload: (content: string) => void;
@@ -10,22 +11,50 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({ onFileUpload, isLoading }: FileUploadProps) {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        onFileUpload(content);
-      };
-      reader.readAsText(file);
+      try {
+        if (file.name.toLowerCase().endsWith('.zip')) {
+          // Handle ZIP files
+          const arrayBuffer = await file.arrayBuffer();
+          const zip = new JSZip();
+          const zipContent = await zip.loadAsync(arrayBuffer);
+          
+          // Look for .txt files in the ZIP
+          const txtFiles = Object.keys(zipContent.files).filter(
+            name => name.toLowerCase().endsWith('.txt') && !zipContent.files[name].dir
+          );
+          
+          if (txtFiles.length === 0) {
+            throw new Error('No .txt files found in the ZIP archive. Please make sure your WhatsApp export contains a text file.');
+          }
+          
+          // Use the first .txt file found
+          const txtFile = zipContent.files[txtFiles[0]];
+          const content = await txtFile.async('string');
+          onFileUpload(content);
+        } else {
+          // Handle regular .txt files
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const content = e.target?.result as string;
+            onFileUpload(content);
+          };
+          reader.readAsText(file);
+        }
+      } catch (error) {
+        console.error('Error processing file:', error);
+        onFileUpload(''); // This will trigger an error in the parent component
+      }
     }
   }, [onFileUpload]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'text/plain': ['.txt']
+      'text/plain': ['.txt'],
+      'application/zip': ['.zip']
     },
     multiple: false,
     disabled: isLoading
@@ -64,7 +93,11 @@ export default function FileUpload({ onFileUpload, isLoading }: FileUploadProps)
                 </div>
               ) : (
                 <div className="relative bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-3xl shadow-lg group-hover:from-blue-500 group-hover:to-purple-600 transition-all duration-300">
-                  <FileText className="h-12 w-12 text-gray-500 group-hover:text-white transition-colors duration-300" />
+                  <div className="flex items-center space-x-3">
+                    <FileText className="h-10 w-10 text-gray-500 group-hover:text-white transition-colors duration-300" />
+                    <div className="text-gray-400 group-hover:text-white transition-colors duration-300 text-xl font-light">or</div>
+                    <Archive className="h-10 w-10 text-gray-500 group-hover:text-white transition-colors duration-300" />
+                  </div>
                 </div>
               )}
             </div>
@@ -75,7 +108,7 @@ export default function FileUpload({ onFileUpload, isLoading }: FileUploadProps)
               {isLoading ? 'Processing Your Chat...' : isDragActive ? 'Drop Your File Here' : 'Upload WhatsApp Export'}
             </h3>
             <p className="text-lg text-gray-600 font-medium">
-              {isLoading ? 'Analyzing conversation patterns...' : 'Drag and drop your .txt file, or click to browse'}
+              {isLoading ? 'Analyzing conversation patterns...' : 'Drag and drop your .txt or .zip file, or click to browse'}
             </p>
           </div>
           
@@ -90,6 +123,10 @@ export default function FileUpload({ onFileUpload, isLoading }: FileUploadProps)
                 <div className="flex items-center space-x-2">
                   <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
                   <p>More → Export chat → &quot;Without Media&quot;</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <p>Upload the .zip file directly (no need to extract!)</p>
                 </div>
               </div>
             </div>

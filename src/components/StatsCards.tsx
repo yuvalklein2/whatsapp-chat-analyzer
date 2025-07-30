@@ -1,7 +1,7 @@
 'use client';
 
 import { AnalyticsData, ChatData } from '@/types/chat';
-import { MessageCircle, Users, Calendar, TrendingUp, Timer, Zap, Smile } from 'lucide-react';
+import { MessageCircle, Users, Timer, Smile } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface StatsCardsProps {

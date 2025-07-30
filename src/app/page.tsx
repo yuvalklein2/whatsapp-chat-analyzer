@@ -24,7 +24,7 @@ export default function HomePage() {
       const parsedData = WhatsAppParser.parseChat(content);
       
       if (parsedData.messages.length === 0) {
-        throw new Error('No messages found in the uploaded file. Please check that you uploaded a valid WhatsApp chat export.');
+        throw new Error('No messages found in the uploaded file. Please check that you uploaded a valid WhatsApp chat export (.txt or .zip file).');
       }
       
       // Set default date range to last month
