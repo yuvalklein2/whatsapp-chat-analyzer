@@ -29,7 +29,22 @@ export class WhatsAppParser {
     
     const lines = content.split('\n');
     console.log('Total lines:', lines.length);
-    console.log('First 5 lines:', lines.slice(0, 5));
+    console.log('First 10 lines:', lines.slice(0, 10));
+    
+    // Show each line and whether it matches any pattern
+    lines.slice(0, 5).forEach((line, index) => {
+      console.log(`Line ${index + 1}: "${line.trim()}"`);
+      let matched = false;
+      this.MESSAGE_PATTERNS.forEach((pattern, patternIndex) => {
+        if (line.match(pattern)) {
+          console.log(`  ✅ Matches message pattern ${patternIndex}`);
+          matched = true;
+        }
+      });
+      if (!matched) {
+        console.log(`  ❌ No pattern match`);
+      }
+    });
     
     const messages: Message[] = [];
     const participants = new Set<string>();
