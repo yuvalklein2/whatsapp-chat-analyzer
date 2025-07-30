@@ -15,6 +15,12 @@ export interface ChatData {
   totalMessages: number;
 }
 
+export interface DateRange {
+  start: Date;
+  end: Date;
+  label: string;
+}
+
 export interface AnalyticsData {
   messagesByDay: { date: string; count: number }[];
   messagesByHour: { hour: number; count: number }[];
@@ -35,4 +41,6 @@ export interface AnalyticsData {
     topEmojis: { emoji: string; count: number }[];
     emojisByParticipant: { name: string; count: number }[];
   };
+  filteredMessageCount: number;
+  totalMessageCount: number;
 }

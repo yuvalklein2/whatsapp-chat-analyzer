@@ -6,12 +6,13 @@ import Dashboard from '@/components/Dashboard';
 import FormatHelper from '@/components/FormatHelper';
 import { WhatsAppParser } from '@/utils/whatsappParser';
 import { ChatAnalytics } from '@/utils/analytics';
-import { ChatData, AnalyticsData } from '@/types/chat';
+import { ChatData, AnalyticsData, DateRange } from '@/types/chat';
 import { MessageSquare, BarChart3, Timer, Users, Zap } from 'lucide-react';
 
 export default function HomePage() {
   const [chatData, setChatData] = useState<ChatData | null>(null);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,22 +27,35 @@ export default function HomePage() {
         throw new Error('No messages found in the uploaded file. Please check that you uploaded a valid WhatsApp chat export.');
       }
       
-      const analytics = ChatAnalytics.analyzeChat(parsedData);
+      // Set default date range to last month
+      const defaultRange = ChatAnalytics.getDefaultDateRange(parsedData);
+      const analytics = ChatAnalytics.analyzeChat(parsedData, defaultRange);
       
       setChatData(parsedData);
+      setSelectedDateRange(defaultRange);
       setAnalyticsData(analytics);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while processing the file.');
       setChatData(null);
       setAnalyticsData(null);
+      setSelectedDateRange(null);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDateRangeChange = (newRange: DateRange) => {
+    if (chatData) {
+      const analytics = ChatAnalytics.analyzeChat(chatData, newRange);
+      setSelectedDateRange(newRange);
+      setAnalyticsData(analytics);
     }
   };
 
   const handleReset = () => {
     setChatData(null);
     setAnalyticsData(null);
+    setSelectedDateRange(null);
     setError(null);
   };
 
@@ -183,8 +197,13 @@ export default function HomePage() {
             </div>
           </div>
         ) : (
-          analyticsData && (
-            <Dashboard analyticsData={analyticsData} chatData={chatData} />
+          analyticsData && selectedDateRange && chatData && (
+            <Dashboard 
+              analyticsData={analyticsData} 
+              chatData={chatData}
+              selectedDateRange={selectedDateRange}
+              onDateRangeChange={handleDateRangeChange}
+            />
           )
         )}
       </main>

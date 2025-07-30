@@ -1,20 +1,30 @@
-import { ChatData, AnalyticsData, Message } from '@/types/chat';
-import { format, getHours } from 'date-fns';
+import { ChatData, AnalyticsData, Message, DateRange } from '@/types/chat';
+import { format, getHours, isWithinInterval, subMonths, subWeeks, startOfDay, endOfDay } from 'date-fns';
 
 export class ChatAnalytics {
-  static analyzeChat(chatData: ChatData): AnalyticsData {
+  static analyzeChat(chatData: ChatData, dateRange?: DateRange): AnalyticsData {
     const { messages } = chatData;
     
-    const messagesByDay = this.getMessagesByDay(messages);
-    const messagesByHour = this.getMessagesByHour(messages);
-    const messagesByParticipant = this.getMessagesByParticipant(messages);
-    const wordFrequency = this.getWordFrequency(messages);
-    const averageMessageLength = this.getAverageMessageLength(messages);
+    // Filter messages by date range if provided
+    const filteredMessages = dateRange 
+      ? messages.filter(message => 
+          isWithinInterval(message.timestamp, {
+            start: dateRange.start,
+            end: dateRange.end
+          })
+        )
+      : messages;
+    
+    const messagesByDay = this.getMessagesByDay(filteredMessages);
+    const messagesByHour = this.getMessagesByHour(filteredMessages);
+    const messagesByParticipant = this.getMessagesByParticipant(filteredMessages);
+    const wordFrequency = this.getWordFrequency(filteredMessages);
+    const averageMessageLength = this.getAverageMessageLength(filteredMessages);
     const mostActiveDay = this.getMostActiveDay(messagesByDay);
     const mostActiveHour = this.getMostActiveHour(messagesByHour);
-    const responseTimeAnalysis = this.getResponseTimeAnalysis(messages);  
-    const conversationStarters = this.getConversationStarters(messages);
-    const emojiAnalysis = this.getEmojiAnalysis(messages);
+    const responseTimeAnalysis = this.getResponseTimeAnalysis(filteredMessages);  
+    const conversationStarters = this.getConversationStarters(filteredMessages);
+    const emojiAnalysis = this.getEmojiAnalysis(filteredMessages);
 
     return {
       messagesByDay,
@@ -26,7 +36,9 @@ export class ChatAnalytics {
       mostActiveHour,
       responseTimeAnalysis,
       conversationStarters,
-      emojiAnalysis
+      emojiAnalysis,
+      filteredMessageCount: filteredMessages.filter(m => !m.isSystemMessage).length,
+      totalMessageCount: messages.filter(m => !m.isSystemMessage).length
     };
   }
 
@@ -243,5 +255,53 @@ export class ChatAnalytics {
       topEmojis,
       emojisByParticipant: emojisByParticipantArray
     };
+  }
+
+  static getDefaultDateRange(chatData: ChatData): DateRange {
+    const now = new Date();
+    const oneMonthAgo = subMonths(now, 1);
+    const oldestMessage = chatData.dateRange.start;
+    
+    // If chat is newer than 1 month, use all data
+    const startDate = oldestMessage > oneMonthAgo ? oldestMessage : oneMonthAgo;
+    
+    return {
+      start: startOfDay(startDate),
+      end: endOfDay(now),
+      label: 'Last Month'
+    };
+  }
+
+  static getDateRangePresets(chatData: ChatData): DateRange[] {
+    const now = new Date();
+    const chatStart = chatData.dateRange.start;
+    
+    return [
+      {
+        start: subWeeks(now, 1),
+        end: now,
+        label: 'Last Week'
+      },
+      {
+        start: subMonths(now, 1),
+        end: now,
+        label: 'Last Month'
+      },
+      {
+        start: subMonths(now, 3),
+        end: now,
+        label: 'Last 3 Months'
+      },
+      {
+        start: subMonths(now, 6),
+        end: now,
+        label: 'Last 6 Months'
+      },
+      {
+        start: chatStart,
+        end: now,
+        label: 'All Time'
+      }
+    ].filter(range => range.start >= chatStart); // Only show ranges that have data
   }
 }

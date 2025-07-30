@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { AnalyticsData, ChatData } from '@/types/chat';
+import { AnalyticsData, ChatData, DateRange } from '@/types/chat';
+import { ChatAnalytics } from '@/utils/analytics';
 import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile } from 'lucide-react';
 import MessagesByDayChart from './charts/MessagesByDayChart';
 import MessagesByHourChart from './charts/MessagesByHourChart';
@@ -11,10 +12,13 @@ import ResponseTimeChart from './charts/ResponseTimeChart';
 import ConversationStartersChart from './charts/ConversationStartersChart';
 import EmojiAnalysisChart from './charts/EmojiAnalysisChart';
 import StatsCards from './StatsCards';
+import DateRangePicker from './DateRangePicker';
 
 interface DashboardProps {
   analyticsData: AnalyticsData;
   chatData: ChatData;
+  selectedDateRange: DateRange;
+  onDateRangeChange: (range: DateRange) => void;
 }
 
 type ChartType = 'messagesByDay' | 'messagesByHour' | 'messagesByParticipant' | 'wordFrequency' | 'responseTime' | 'conversationStarters' | 'emojiAnalysis';
@@ -71,8 +75,10 @@ const chartOptions: ChartOption[] = [
   }
 ];
 
-export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
+export default function Dashboard({ analyticsData, chatData, selectedDateRange, onDateRangeChange }: DashboardProps) {
   const [selectedCharts, setSelectedCharts] = useState<ChartType[]>(['messagesByDay', 'responseTime', 'conversationStarters']);
+  
+  const dateRangePresets = ChatAnalytics.getDateRangePresets(chatData);
 
   const toggleChart = (chartId: ChartType) => {
     setSelectedCharts(prev => 
@@ -105,6 +111,24 @@ export default function Dashboard({ analyticsData, chatData }: DashboardProps) {
 
   return (
     <div className="space-y-8">
+      {/* Header with Date Range Picker */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            Conversation Analytics
+          </h1>
+          <p className="text-gray-600 font-medium mt-1">
+            Showing {analyticsData.filteredMessageCount.toLocaleString()} of {analyticsData.totalMessageCount.toLocaleString()} messages
+          </p>
+        </div>
+        
+        <DateRangePicker
+          selectedRange={selectedDateRange}
+          presets={dateRangePresets}
+          onRangeChange={onDateRangeChange}
+        />
+      </div>
+
       <StatsCards analyticsData={analyticsData} chatData={chatData} />
       
       <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg">
