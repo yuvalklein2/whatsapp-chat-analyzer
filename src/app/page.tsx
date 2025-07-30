@@ -92,7 +92,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {!chatData ? (
           <div className="space-y-12">
             <div className="text-center relative">
@@ -137,7 +137,7 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">Powerful Features</h3>
                 <p className="text-gray-600 font-medium">Everything you need to understand your conversations</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 <div className="group relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative">

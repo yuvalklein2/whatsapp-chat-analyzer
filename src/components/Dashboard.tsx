@@ -114,51 +114,55 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
   return (
     <div className="space-y-8">
       {/* Header with Date Range Picker */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div className="flex items-center space-x-4">
-          {showMultiGraph && (
+      <div className="flex flex-col gap-6">
+        {/* Back button for mobile */}
+        {showMultiGraph && (
+          <div className="flex items-center">
             <button
               onClick={() => setShowMultiGraph(false)}
-              className="group flex items-center space-x-2 px-5 py-3 bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300 hover:scale-105"
+              className="group flex items-center space-x-2 px-4 py-2.5 bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300 hover:scale-105"
             >
               <ChevronLeft className="h-4 w-4 text-gray-600 group-hover:-translate-x-1 transition-transform duration-300" />
               <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">Back to Overview</span>
             </button>
-          )}
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              {showMultiGraph ? 'Multi-Graph Comparison' : 'Conversation Analytics'}
-            </h1>
-            <p className="text-gray-600 font-medium mt-1">
-              {showMultiGraph 
-                ? 'Compare insights across different time periods'
-                : `Showing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} messages`
-              }
-            </p>
           </div>
+        )}
+        
+        {/* Title section */}
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent leading-tight">
+            {showMultiGraph ? 'Multi-Graph Comparison' : 'Conversation Analytics'}
+          </h1>
+          <p className="text-gray-600 font-medium mt-2 text-sm sm:text-base">
+            {showMultiGraph 
+              ? 'Compare insights across different time periods'
+              : `Showing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} messages`
+            }
+          </p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          {!showMultiGraph && (
+        {/* Action buttons */}
+        {!showMultiGraph && (
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => setShowMultiGraph(true)}
-              className="group relative overflow-hidden flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:ring-offset-2 transition-all duration-300"
+              className="group relative overflow-hidden flex items-center justify-center space-x-3 px-6 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:ring-offset-2 transition-all duration-300"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <Grid3X3 className="relative h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="relative font-semibold">Multi-Graph</span>
+              <span className="relative font-semibold">Multi-Graph Comparison</span>
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-rose-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
             </button>
-          )}
-          
-          {!showMultiGraph && (
-            <DateRangePicker
-              selectedRange={selectedDateRange}
-              presets={dateRangePresets}
-              onRangeChange={onDateRangeChange}
-            />
-          )}
-        </div>
+            
+            <div className="flex justify-center sm:justify-start">
+              <DateRangePicker
+                selectedRange={selectedDateRange}
+                presets={dateRangePresets}
+                onRangeChange={onDateRangeChange}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {showMultiGraph ? (
@@ -176,7 +180,7 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           </h2>
           <p className="text-gray-600 font-medium">Select the insights you want to explore</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-8">
           {chartOptions.map((option) => {
             const Icon = option.icon;
             const isSelected = selectedCharts.includes(option.id);
@@ -186,7 +190,7 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                 key={option.id}
                 onClick={() => toggleChart(option.id)}
                 className={`
-                  group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:-translate-y-1
+                  group relative p-4 sm:p-6 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:-translate-y-1 min-h-[120px] flex flex-col justify-between
                   ${isSelected 
                     ? 'border-blue-400/50 bg-gradient-to-br from-blue-50/80 to-purple-50/80 shadow-xl' 
                     : 'border-gray-200/50 bg-white/50 hover:border-blue-300/50 hover:bg-gradient-to-br hover:from-blue-50/40 hover:to-purple-50/40 hover:shadow-lg'
@@ -201,24 +205,24 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur opacity-20 -z-10"></div>
                 )}
                 
-                <div className="relative">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className={`p-2 rounded-xl transition-all duration-300 ${
+                <div className="relative flex-1 flex flex-col">
+                  <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-3">
+                    <div className={`p-1.5 sm:p-2 rounded-xl transition-all duration-300 ${
                       isSelected 
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg' 
                         : 'bg-gray-100 group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-600'
                     }`}>
-                      <Icon className={`h-5 w-5 transition-colors duration-300 ${
+                      <Icon className={`h-4 w-4 sm:h-5 sm:w-5 transition-colors duration-300 ${
                         isSelected ? 'text-white' : 'text-gray-500 group-hover:text-white'
                       }`} />
                     </div>
-                    <span className={`font-bold transition-colors duration-300 ${
+                    <span className={`text-sm sm:text-base font-bold transition-colors duration-300 leading-tight ${
                       isSelected ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
                     }`}>
                       {option.name}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{option.description}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed flex-1">{option.description}</p>
                 </div>
               </button>
             );
@@ -226,7 +230,7 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {selectedCharts.map((chartType) => {
           const chartOption = chartOptions.find(opt => opt.id === chartType);
           const Icon = chartOption?.icon;
