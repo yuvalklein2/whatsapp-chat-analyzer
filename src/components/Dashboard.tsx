@@ -14,6 +14,9 @@ import EmojiAnalysisChart from './charts/EmojiAnalysisChart';
 import StatsCards from './StatsCards';
 import DateRangePicker from './DateRangePicker';
 import MultiGraphManager from './MultiGraphManager';
+import InsightsPanel from './InsightsPanel';
+import ChartExplanation from './ChartExplanation';
+import KeyTakeaways from './KeyTakeaways';
 
 interface DashboardProps {
   analyticsData: AnalyticsData;
@@ -173,6 +176,10 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         <>
           <StatsCards analyticsData={analyticsData} chatData={chatData} />
           
+          <KeyTakeaways analyticsData={analyticsData} chatData={chatData} />
+          
+          <InsightsPanel analyticsData={analyticsData} chatData={chatData} />
+          
           <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-lg">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
@@ -240,15 +247,18 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-purple-50/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="relative">
-                <div className="flex items-center space-x-4 mb-6">
-                  {Icon && (
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl shadow-lg">
-                      <Icon className="h-6 w-6 text-white" />
-                    </div>
-                  )}
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    {chartOption?.name}
-                  </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-4">
+                    {Icon && (
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl shadow-lg">
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                      {chartOption?.name}
+                    </h3>
+                  </div>
+                  <ChartExplanation chartType={chartType} />
                 </div>
                 {renderChart(chartType)}
               </div>
