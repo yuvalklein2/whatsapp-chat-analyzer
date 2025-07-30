@@ -42,23 +42,22 @@ export default function ResponseTimeChart({ data }: ResponseTimeChartProps) {
           tickFormatter={formatTime}
         />
         <Tooltip 
-          formatter={(value: number, name: string, props) => [
+          formatter={(value: number) => [
             formatTime(value),
             'Average Response Time'
           ]}
-          labelFormatter={(label) => `${label}`}
-          itemStyle={{ color: '#1F2937' }}
-          contentStyle={{ 
-            backgroundColor: '#F9FAFB', 
-            border: '1px solid #E5E7EB',
-            borderRadius: '6px'
-          }}
-          label={(label, payload) => {
+          labelFormatter={(label, payload) => {
             if (payload && payload[0]) {
               const data = payload[0].payload;
               return `${data.name} (${data.totalResponses} responses)`;
             }
             return label;
+          }}
+          itemStyle={{ color: '#1F2937' }}
+          contentStyle={{ 
+            backgroundColor: '#F9FAFB', 
+            border: '1px solid #E5E7EB',
+            borderRadius: '6px'
           }}
         />
         <Bar 
