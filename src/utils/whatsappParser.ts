@@ -29,6 +29,68 @@ export class WhatsAppParser {
     /^(\d{1,2}\.\d{1,2}\.\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AaPp][Mm])?)\s*[-–]\s*(.*)$/,
   ];
 
+  // Common system message indicators that should not be treated as participants
+  private static readonly SYSTEM_MESSAGE_INDICATORS = [
+    // Group management
+    'created group',
+    'added',
+    'removed',
+    'left',
+    'joined',
+    'changed the group name',
+    'changed the group description',
+    'changed the group icon',
+    'changed the group settings',
+    'promoted',
+    'demoted',
+    // Security/encryption
+    'messages and calls are end-to-end encrypted',
+    'security code changed',
+    // Other system messages
+    'missed call',
+    'missed voice call',
+    'missed video call',
+    'deleted this message',
+    'this message was deleted',
+    // Hebrew/other language equivalents
+    'יצר קבוצה',
+    'הוסיף',
+    'הסיר',
+    'עזב',
+    'הצטרף',
+    'שינה את שם הקבוצה',
+    'שינה את תיאור הקבוצה',
+    'שינה את תמונת הקבוצה',
+  ];
+
+  private static isSystemMessage(author: string, content: string): boolean {
+    // Check if the content contains system message indicators
+    const fullText = `${author} ${content}`.toLowerCase();
+    
+    return this.SYSTEM_MESSAGE_INDICATORS.some(indicator => 
+      fullText.includes(indicator.toLowerCase())
+    );
+  }
+
+  private static isValidParticipant(author: string, content: string): boolean {
+    // Don't add as participant if it's a system message
+    if (this.isSystemMessage(author, content)) {
+      return false;
+    }
+    
+    // Don't add very long author names (likely system messages or group names)
+    if (author.length > 50) {
+      return false;
+    }
+    
+    // Don't add authors that look like phone numbers only
+    if (/^\+?\d{10,15}$/.test(author.trim())) {
+      return false;
+    }
+    
+    return true;
+  }
+
   static parseChat(content: string): ChatData {
     console.log('Parsing chat content, first 500 chars:', content.substring(0, 500));
     console.log('Total content length:', content.length);
@@ -93,14 +155,21 @@ export class WhatsAppParser {
 
         const [, date, time, author, content] = messageMatch;
         const timestamp = this.parseTimestamp(date, time, patternUsed);
+        const trimmedAuthor = author.trim();
+        const trimmedContent = content.trim();
         
-        participants.add(author.trim());
+        // Check if this is actually a system message or valid participant
+        const isSystem = this.isSystemMessage(trimmedAuthor, trimmedContent);
+        
+        if (!isSystem && this.isValidParticipant(trimmedAuthor, trimmedContent)) {
+          participants.add(trimmedAuthor);
+        }
         
         currentMessage = {
           timestamp,
-          author: author.trim(),
-          content: content.trim(),
-          isSystemMessage: false
+          author: trimmedAuthor,
+          content: trimmedContent,
+          isSystemMessage: isSystem
         };
       } else if (systemMatch) {
         if (currentMessage) {
