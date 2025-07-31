@@ -7,7 +7,7 @@ import FormatHelper from '@/components/FormatHelper';
 import { WhatsAppParser } from '@/utils/whatsappParser';
 import { ChatAnalytics } from '@/utils/analytics';
 import { ChatData, AnalyticsData, DateRange } from '@/types/chat';
-import { MessageSquare, BarChart3, Timer, Users, Zap } from 'lucide-react';
+import { BarChart3, Timer, Users, Zap } from 'lucide-react';
 
 export default function HomePage() {
   const [chatData, setChatData] = useState<ChatData | null>(null);
@@ -60,45 +60,61 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-slate-900 border-b border-slate-700 sticky top-0 z-40 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4 sm:py-6">
-            <div className="flex items-center space-x-3 min-w-0 flex-1">
-              <div className="bg-blue-600 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            <div className="flex items-center space-x-4 min-w-0 flex-1">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl flex-shrink-0 shadow-lg">
+                <BarChart3 className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-2xl font-semibold text-gray-900 truncate">
-                  WhatsApp Analyzer
+                <h1 className="text-xl sm:text-2xl font-bold text-white truncate">
+                  Communication Analytics Platform
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden xs:block">Insights from your conversations</p>
+                <p className="text-sm text-slate-300 hidden sm:block">Executive Dashboard & Team Performance Insights</p>
               </div>
             </div>
             {chatData && (
               <button
                 onClick={handleReset}
-                className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors whitespace-nowrap ml-3"
+                className="px-4 py-2 sm:px-6 sm:py-3 text-sm font-semibold text-white bg-slate-700 border border-slate-600 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 whitespace-nowrap ml-4 shadow-lg"
               >
                 <span className="hidden sm:inline">New Analysis</span>
-                <span className="sm:hidden">New</span>
+                <span className="sm:hidden">Reset</span>
               </button>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {!chatData ? (
-          <div className="space-y-6 sm:space-y-8">
-            <div className="text-center px-4">
-              <BarChart3 className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight">
-                Analyze Your WhatsApp Conversations
+          <div className="space-y-8 sm:space-y-12">
+            <div className="text-center px-4 bg-white rounded-2xl shadow-xl p-8 sm:p-12 border border-slate-200">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 rounded-2xl w-fit mx-auto mb-6 shadow-lg">
+                <BarChart3 className="h-12 w-12 sm:h-16 sm:w-16 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4 leading-tight">
+                Team Communication Analytics
               </h2>
-              <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                Upload your chat export to discover insights, patterns, and statistics from your conversations.
+              <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
+                Transform your team communications into actionable business insights. Analyze engagement patterns, response efficiency, and collaboration dynamics.
               </p>
+              <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Enterprise-Grade Security</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>Real-time Analytics</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span>Executive Reporting</span>
+                </div>
+              </div>
             </div>
             
             <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />
@@ -106,36 +122,56 @@ export default function HomePage() {
             <FormatHelper />
             
             {error && (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-red-800 mb-2">Upload Error</h3>
-                  <p className="text-sm text-red-700">{error}</p>
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 shadow-lg">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">!</span>
+                      </div>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-lg font-semibold text-red-800 mb-1">Analysis Error</h3>
+                      <p className="text-sm text-red-700">{error}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
             
-            <div className="text-center px-4">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">What you&apos;ll discover</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
-                <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-                  <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mx-auto mb-2 sm:mb-3" />
-                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Interactive Charts</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">Timeline analysis, response times, and conversation patterns</p>
+            <div className="bg-slate-900 rounded-2xl p-8 sm:p-12 shadow-2xl">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Executive Analytics Suite</h3>
+                <p className="text-slate-300 text-lg">Comprehensive insights for strategic decision-making</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-blue-500 transition-colors">
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-3 rounded-lg w-fit mb-4">
+                    <BarChart3 className="h-6 w-6 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Performance Metrics</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">Advanced analytics with interactive visualizations and trend analysis</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-                  <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 mx-auto mb-2 sm:mb-3" />
-                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Response Analytics</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">Understand how quickly people respond to messages</p>
+                <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-purple-500 transition-colors">
+                  <div className="bg-gradient-to-r from-purple-600 to-violet-700 p-3 rounded-lg w-fit mb-4">
+                    <Timer className="h-6 w-6 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Efficiency Analysis</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">Response time metrics and team productivity insights</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-                  <Users className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mx-auto mb-2 sm:mb-3" />
-                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Privacy Focused</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">All processing happens locally in your browser</p>
+                <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-green-500 transition-colors">
+                  <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-3 rounded-lg w-fit mb-4">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Team Dynamics</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">Collaboration patterns and engagement analysis</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-                  <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 mx-auto mb-2 sm:mb-3" />
-                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Easy to Use</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">Just drag and drop your WhatsApp export file</p>
+                <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-orange-500 transition-colors">
+                  <div className="bg-gradient-to-r from-orange-600 to-red-700 p-3 rounded-lg w-fit mb-4">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Strategic Insights</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">Executive summaries and actionable business intelligence</p>
                 </div>
               </div>
             </div>

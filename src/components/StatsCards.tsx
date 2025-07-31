@@ -26,32 +26,32 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
 
   const stats = [
     {
-      name: 'Total Messages',
+      name: 'Communication Volume',
       value: chatData.totalMessages.toLocaleString(),
       icon: MessageCircle,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'
     },
     {
-      name: 'Participants',
+      name: 'Team Members',
       value: chatData.participants.length.toString(),
       icon: Users,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
     },
     {
-      name: 'Avg Response Time',
+      name: 'Response Velocity',
       value: formatResponseTime(analyticsData.responseTimeAnalysis.averageResponseTimeMinutes),
       icon: Timer,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50'
     },
     {
-      name: 'Total Emojis',
+      name: 'Engagement Level',
       value: analyticsData.emojiAnalysis.totalEmojis.toLocaleString(),
       icon: Smile,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50'
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
     }
   ];
 
@@ -89,68 +89,68 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
         })}
       </div>
       
-      <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-        <div className="mb-4 sm:mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-            Key Insights
+      <div className="bg-slate-900 rounded-xl p-6 sm:p-8 border border-slate-700 shadow-xl">
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">
+            Executive Summary
           </h3>
-          <p className="text-sm sm:text-base text-gray-600">Highlights from your conversation</p>
+          <p className="text-slate-300">Strategic insights and performance indicators</p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Date Range</p>
-            <p className="text-xs sm:text-sm font-semibold text-gray-900">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-slate-800 rounded-lg border border-slate-600">
+            <p className="text-sm font-medium text-slate-400 mb-2">Analysis Period</p>
+            <p className="text-sm font-bold text-white">
               {formatDate(chatData.dateRange.start)}
             </p>
-            <p className="text-xs text-gray-500">to</p>
-            <p className="text-xs sm:text-sm font-semibold text-gray-900">
+            <p className="text-xs text-slate-500 my-1">to</p>
+            <p className="text-sm font-bold text-white">
               {formatDate(chatData.dateRange.end)}
             </p>
           </div>
           
-          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Fastest Responder</p>
-            <p className="text-sm sm:text-lg font-semibold text-blue-600 truncate">
+          <div className="text-center p-4 bg-slate-800 rounded-lg border border-slate-600">
+            <p className="text-sm font-medium text-slate-400 mb-2">Top Performer</p>
+            <p className="text-lg font-bold text-blue-400 truncate">
               {analyticsData.responseTimeAnalysis.fastestResponder}
             </p>
           </div>
           
-          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Top Conversation Starter</p>
-            <p className="text-sm sm:text-lg font-semibold text-green-600 truncate">
+          <div className="text-center p-4 bg-slate-800 rounded-lg border border-slate-600">
+            <p className="text-sm font-medium text-slate-400 mb-2">Initiative Leader</p>
+            <p className="text-lg font-bold text-green-400 truncate">
               {analyticsData.conversationStarters[0]?.name || 'N/A'}
             </p>
           </div>
           
-          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Most Used Emoji</p>
-            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
-              <span className="text-lg sm:text-xl">{analyticsData.emojiAnalysis.topEmojis[0]?.emoji || '❓'}</span>
-              <span className="text-sm sm:text-lg font-semibold text-yellow-600">
+          <div className="text-center p-4 bg-slate-800 rounded-lg border border-slate-600">
+            <p className="text-sm font-medium text-slate-400 mb-2">Engagement Indicator</p>
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-xl">{analyticsData.emojiAnalysis.topEmojis[0]?.emoji || '❓'}</span>
+              <span className="text-lg font-bold text-orange-400">
                 {analyticsData.emojiAnalysis.topEmojis[0]?.count || 0}
               </span>
             </div>
           </div>
         </div>
         
-        <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-          <p className="text-sm font-medium text-gray-600 mb-3 sm:mb-4">Participants</p>
+        <div className="mt-6 pt-6 border-t border-slate-700">
+          <p className="text-sm font-semibold text-slate-300 mb-4">Team Roster</p>
           <div className="flex flex-wrap gap-2">
             {chatData.participants.map((participant, index) => {
               const colors = [
-                'bg-blue-100 text-blue-700',
-                'bg-purple-100 text-purple-700',
-                'bg-green-100 text-green-700',
-                'bg-orange-100 text-orange-700',
-                'bg-pink-100 text-pink-700',
-                'bg-indigo-100 text-indigo-700'
+                'bg-blue-600 text-blue-100 border-blue-500',
+                'bg-purple-600 text-purple-100 border-purple-500',
+                'bg-green-600 text-green-100 border-green-500',
+                'bg-orange-600 text-orange-100 border-orange-500',
+                'bg-pink-600 text-pink-100 border-pink-500',
+                'bg-indigo-600 text-indigo-100 border-indigo-500'
               ];
               
               return (
                 <span
                   key={participant}
-                  className={`inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${colors[index % colors.length]} truncate max-w-32 sm:max-w-none`}
+                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border ${colors[index % colors.length]} truncate max-w-32 sm:max-w-none shadow-lg`}
                   title={participant}
                 >
                   {participant}

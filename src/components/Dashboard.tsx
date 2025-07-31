@@ -37,45 +37,45 @@ interface ChartOption {
 const chartOptions: ChartOption[] = [
   {
     id: 'messagesByDay',
-    name: 'Messages by Day',
+    name: 'Activity Timeline',
     icon: Calendar,
-    description: 'Daily message activity over time'
+    description: 'Daily communication volume and engagement trends'
   },
   {
     id: 'messagesByHour',
-    name: 'Messages by Hour',
+    name: 'Peak Hours Analysis',
     icon: Clock,
-    description: 'Hourly message patterns throughout the day'
+    description: 'Optimal communication windows and team availability'
   },
   {
     id: 'messagesByParticipant',
-    name: 'Messages by Participant',
+    name: 'Team Contribution',
     icon: Users,
-    description: 'Message count breakdown by participant'
+    description: 'Individual participation levels and engagement metrics'
   },
   {
     id: 'responseTime',
-    name: 'Response Time Analysis',
+    name: 'Response Efficiency',
     icon: Timer,
-    description: 'How quickly people respond to messages'
+    description: 'Team responsiveness and communication velocity KPIs'
   },
   {
     id: 'conversationStarters',
-    name: 'Conversation Starters',
+    name: 'Initiative Leaders',
     icon: Zap,
-    description: 'Who initiates conversations most often'
+    description: 'Team members driving conversations and collaboration'
   },
   {
     id: 'emojiAnalysis',
-    name: 'Emoji Analysis',
+    name: 'Sentiment Indicators',
     icon: Smile,
-    description: 'Most frequently used emojis'
+    description: 'Team morale and emotional engagement patterns'
   },
   {
     id: 'wordFrequency',
-    name: 'Word Frequency',
+    name: 'Key Topics',
     icon: MessageSquare,
-    description: 'Most commonly used words in conversations'
+    description: 'Most discussed subjects and communication themes'
   }
 ];
 
@@ -132,16 +132,22 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         )}
         
         {/* Title section */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {showMultiGraph ? 'Multi-Graph Comparison' : 'Analytics Dashboard'}
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            {showMultiGraph ? 'Performance Comparison Analysis' : 'Executive Communication Dashboard'}
           </h1>
-          <p className="text-gray-600 mt-1">
-            {showMultiGraph 
-              ? 'Compare insights across different time periods'
-              : `Showing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} messages`
-            }
-          </p>
+          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <p className="text-slate-600">
+              {showMultiGraph 
+                ? 'Comparative insights across multiple time periods'
+                : `Analyzing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} total communications`
+              }
+            </p>
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Live Data</span>
+            </div>
+          </div>
         </div>
         
         {/* Action buttons */}
@@ -149,12 +155,12 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => setShowMultiGraph(true)}
-              className="flex items-center justify-center space-x-2 px-4 py-3 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors touch-manipulation"
+              className="flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 active:from-slate-900 active:to-black focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 touch-manipulation shadow-lg"
             >
-              <Grid3X3 className="h-4 w-4" />
-              <span className="font-medium text-sm sm:text-base">
-                <span className="hidden sm:inline">Compare Time Periods</span>
-                <span className="sm:hidden">Compare Periods</span>
+              <Grid3X3 className="h-5 w-5" />
+              <span className="font-semibold">
+                <span className="hidden sm:inline">Comparative Analysis</span>
+                <span className="sm:hidden">Compare</span>
               </span>
             </button>
             
@@ -179,12 +185,12 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           
           <InsightsPanel analyticsData={analyticsData} chatData={chatData} />
           
-          <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-        <div className="mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-            Choose Your Charts
+          <div className="bg-slate-900 rounded-xl p-6 sm:p-8 border border-slate-700 shadow-xl">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
+            Analytics Configuration
           </h2>
-          <p className="text-sm sm:text-base text-gray-600">Select the insights you want to explore</p>
+          <p className="text-slate-300">Configure your executive dashboard with relevant performance metrics</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {chartOptions.map((option) => {
@@ -196,29 +202,31 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                 key={option.id}
                 onClick={() => toggleChart(option.id)}
                 className={`
-                  p-3 sm:p-4 rounded-lg border-2 transition-colors text-left min-h-[80px] sm:min-h-[100px] flex flex-col justify-between touch-manipulation active:scale-95
+                  p-4 sm:p-5 rounded-lg border-2 transition-all duration-200 text-left min-h-[90px] sm:min-h-[110px] flex flex-col justify-between touch-manipulation hover:scale-105
                   ${isSelected 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100'
+                    ? 'border-blue-500 bg-slate-800 shadow-lg' 
+                    : 'border-slate-600 bg-slate-700 hover:border-blue-400 hover:bg-slate-600 active:bg-slate-800'
                   }
                 `}
               >
                 <div className="flex-1 flex flex-col">
                   <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-3">
-                    <div className={`p-1.5 sm:p-2 rounded-lg ${
-                      isSelected ? 'bg-blue-600' : 'bg-gray-100'
+                    <div className={`p-2 rounded-lg ${
+                      isSelected ? 'bg-blue-600 shadow-lg' : 'bg-slate-600'
                     }`}>
-                      <Icon className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                        isSelected ? 'text-white' : 'text-gray-500'
+                      <Icon className={`h-4 w-4 ${
+                        isSelected ? 'text-white' : 'text-slate-300'
                       }`} />
                     </div>
-                    <span className={`text-xs sm:text-sm font-medium leading-tight ${
-                      isSelected ? 'text-gray-900' : 'text-gray-700'
+                    <span className={`text-sm font-semibold leading-tight ${
+                      isSelected ? 'text-white' : 'text-slate-200'
                     }`}>
                       {option.name}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 leading-relaxed">{option.description}</p>
+                  <p className={`text-xs leading-relaxed ${
+                    isSelected ? 'text-slate-300' : 'text-slate-400'
+                  }`}>{option.description}</p>
                 </div>
               </button>
             );

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Analyzer - Conversation Insights",
-  description: "Analyze your WhatsApp conversations with interactive charts and insights. Privacy-focused, browser-based chat analysis tool.",
+  title: "Communication Analytics Platform - Executive Dashboard",
+  description: "Enterprise-grade communication analytics platform for team performance insights, engagement metrics, and organizational communication patterns.",
 };
 
 export const viewport = {
