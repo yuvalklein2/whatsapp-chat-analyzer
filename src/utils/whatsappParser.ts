@@ -61,6 +61,22 @@ export class WhatsAppParser {
     'שינה את שם הקבוצה',
     'שינה את תיאור הקבוצה',
     'שינה את תמונת הקבוצה',
+    'מחק הודעה זו',
+    'הודעה זו נמחקה',
+  ];
+
+  // Patterns that indicate group/team names that should be excluded
+  private static readonly GROUP_NAME_PATTERNS = [
+    // Hebrew patterns
+    /^.*(של חברים|חברים של|קבוצת|קבוצה|צוות|טים|team).*$/i,
+    // English patterns
+    /^.*(team|group|squad|crew|friends of|members of).*$/i,
+    // Very long names (likely group descriptions)
+    /^.{40,}$/,
+    // Names with lots of spaces or special characters
+    /^.*[\s]{3,}.*$/,
+    // Names that end with common group suffixes
+    /^.*(group|קבוצה|צוות|team|squad)$/i,
   ];
 
   private static isSystemMessage(author: string, content: string): boolean {
@@ -78,6 +94,11 @@ export class WhatsAppParser {
       return false;
     }
     
+    // Check if author name matches group name patterns
+    if (this.GROUP_NAME_PATTERNS.some(pattern => pattern.test(author))) {
+      return false;
+    }
+    
     // Don't add very long author names (likely system messages or group names)
     if (author.length > 50) {
       return false;
@@ -85,6 +106,16 @@ export class WhatsAppParser {
     
     // Don't add authors that look like phone numbers only
     if (/^\+?\d{10,15}$/.test(author.trim())) {
+      return false;
+    }
+    
+    // Don't add empty or whitespace-only authors
+    if (!author.trim()) {
+      return false;
+    }
+    
+    // Don't add authors with suspicious patterns (multiple consecutive spaces, etc.)
+    if (/\s{2,}/.test(author)) {
       return false;
     }
     
