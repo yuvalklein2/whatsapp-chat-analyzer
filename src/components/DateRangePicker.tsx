@@ -23,20 +23,20 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors w-full sm:w-auto touch-manipulation"
+        className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors w-full sm:w-auto touch-manipulation"
       >
-        <div className="bg-blue-600 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+        <div className="bg-blue-600 p-1 rounded-lg flex-shrink-0">
+          <Calendar className="h-3 w-3 text-white" />
         </div>
         
         <div className="flex-1 text-left min-w-0">
           <p className="text-xs font-medium text-gray-600">Time Range</p>
-          <p className="text-sm sm:text-base font-semibold text-gray-900 truncate">
+          <p className="text-sm font-semibold text-gray-900 truncate">
             {selectedRange.label}
           </p>
         </div>
         
-        <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-3 w-3 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

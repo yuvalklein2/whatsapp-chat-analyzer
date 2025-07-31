@@ -155,10 +155,10 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => setShowMultiGraph(true)}
-              className="flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 active:from-slate-900 active:to-black focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 touch-manipulation shadow-lg"
+              className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 active:from-slate-900 active:to-black focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 touch-manipulation shadow-lg"
             >
-              <Grid3X3 className="h-5 w-5" />
-              <span className="font-semibold">
+              <Grid3X3 className="h-4 w-4" />
+              <span className="font-medium text-sm">
                 <span className="hidden sm:inline">Comparative Analysis</span>
                 <span className="sm:hidden">Compare</span>
               </span>
