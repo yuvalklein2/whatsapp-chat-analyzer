@@ -23,20 +23,20 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center space-x-2 sm:space-x-3 px-4 sm:px-6 py-3 sm:py-4 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+        className="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors w-full sm:w-auto touch-manipulation"
       >
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-1.5 sm:p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+        <div className="bg-blue-600 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
         </div>
         
         <div className="flex-1 text-left min-w-0">
-          <p className="text-xs sm:text-sm font-semibold text-gray-600">Time Range</p>
-          <p className="text-sm sm:text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent truncate">
+          <p className="text-xs font-medium text-gray-600">Time Range</p>
+          <p className="text-sm sm:text-base font-semibold text-gray-900 truncate">
             {selectedRange.label}
           </p>
         </div>
         
-        <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -48,14 +48,14 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
           />
           
           {/* Dropdown */}
-          <div className="absolute top-full mt-2 left-0 right-0 sm:right-0 sm:left-auto z-50 sm:min-w-80 bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="absolute top-full mt-2 left-0 right-0 sm:right-0 sm:left-auto z-50 sm:min-w-80 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden">
             <div className="p-3 sm:p-4">
-              <div className="flex items-center space-x-2 mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-gray-200/50">
+              <div className="flex items-center space-x-2 mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-gray-200">
                 <Clock className="h-4 w-4 text-gray-500" />
                 <h3 className="text-sm font-semibold text-gray-700">Select Time Range</h3>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1 sm:space-y-2">
                 {presets.map((preset) => {
                   const isSelected = preset.label === selectedRange.label;
                   
@@ -63,33 +63,31 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
                     <button
                       key={preset.label}
                       onClick={() => handlePresetSelect(preset)}
-                      className={`w-full flex items-center justify-between p-3 sm:p-4 rounded-xl transition-all duration-200 text-left ${
+                      className={`w-full flex items-center justify-between p-2 sm:p-3 rounded-lg transition-colors text-left touch-manipulation ${
                         isSelected
-                          ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-400/50 shadow-md'
-                          : 'bg-white/40 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 border-2 border-transparent hover:border-blue-300/30'
+                          ? 'bg-blue-50 border border-blue-200'
+                          : 'bg-white hover:bg-blue-50 border border-transparent hover:border-blue-200'
                       }`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 sm:space-x-3">
-                          <div className={`w-3 h-3 rounded-full transition-all duration-200 flex-shrink-0 ${
-                            isSelected 
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg' 
-                              : 'bg-gray-300'
+                          <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${
+                            isSelected ? 'bg-blue-600' : 'bg-gray-300'
                           }`} />
-                          <span className={`font-semibold transition-colors duration-200 text-sm sm:text-base ${
+                          <span className={`font-medium text-xs sm:text-sm ${
                             isSelected ? 'text-gray-900' : 'text-gray-700'
                           }`}>
                             {preset.label}
                           </span>
                         </div>
-                        <div className="ml-5 sm:ml-6 mt-1 text-xs text-gray-500">
+                        <div className="ml-4 sm:ml-6 mt-1 text-xs text-gray-500">
                           {format(preset.start, 'MMM d, yyyy')} - {format(preset.end, 'MMM d, yyyy')}
                         </div>
                       </div>
                       
                       {isSelected && (
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full" />
+                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full" />
                         </div>
                       )}
                     </button>
@@ -97,7 +95,7 @@ export default function DateRangePicker({ selectedRange, presets, onRangeChange 
                 })}
               </div>
               
-              <div className="mt-4 pt-3 border-t border-gray-200/50">
+              <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200">
                 <div className="text-xs text-gray-500 text-center">
                   Showing {selectedRange.label.toLowerCase()} data
                 </div>

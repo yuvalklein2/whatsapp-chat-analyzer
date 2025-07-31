@@ -15,14 +15,23 @@ export default function MessagesByDayChart({ data }: MessagesByDayChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={formattedData}>
-        <CartesianGrid strokeDasharray="3 3" />
+      <LineChart 
+        data={formattedData}
+        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
         <XAxis 
           dataKey="formattedDate" 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 11 }}
           interval="preserveStartEnd"
+          axisLine={{ stroke: '#e2e8f0' }}
+          tickLine={{ stroke: '#e2e8f0' }}
         />
-        <YAxis tick={{ fontSize: 12 }} />
+        <YAxis 
+          tick={{ fontSize: 11 }} 
+          axisLine={{ stroke: '#e2e8f0' }}
+          tickLine={{ stroke: '#e2e8f0' }}
+        />
         <Tooltip 
           labelFormatter={(label, payload) => {
             if (payload && payload[0]) {
@@ -32,14 +41,21 @@ export default function MessagesByDayChart({ data }: MessagesByDayChartProps) {
             return label;
           }}
           formatter={(value: number) => [value, 'Messages']}
+          contentStyle={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            fontSize: '12px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}
         />
         <Line 
           type="monotone" 
           dataKey="count" 
           stroke="#3B82F6" 
           strokeWidth={2}
-          dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
-          activeDot={{ r: 6 }}
+          dot={{ fill: '#3B82F6', strokeWidth: 2, r: 3 }}
+          activeDot={{ r: 5, fill: '#1D4ED8' }}
         />
       </LineChart>
     </ResponsiveContainer>

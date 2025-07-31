@@ -60,8 +60,8 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           const colors = [
@@ -72,14 +72,14 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
           ];
           
           return (
-            <div key={stat.name} className="bg-white rounded-lg p-6 border border-gray-200">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-lg ${colors[index]}`}>
-                  <Icon className="h-6 w-6" />
+            <div key={stat.name} className="bg-white rounded-lg p-3 sm:p-6 border border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <div className={`p-2 sm:p-3 rounded-lg ${colors[index]} self-start sm:self-auto`}>
+                  <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600 mb-1">{stat.name}</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 leading-tight">{stat.name}</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
                     {stat.value}
                   </p>
                 </div>
@@ -89,53 +89,53 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
         })}
       </div>
       
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+        <div className="mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Key Insights
           </h3>
-          <p className="text-gray-600">Highlights from your conversation</p>
+          <p className="text-sm sm:text-base text-gray-600">Highlights from your conversation</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-600 mb-2">Date Range</p>
-            <p className="text-sm font-semibold text-gray-900">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Date Range</p>
+            <p className="text-xs sm:text-sm font-semibold text-gray-900">
               {formatDate(chatData.dateRange.start)}
             </p>
             <p className="text-xs text-gray-500">to</p>
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-xs sm:text-sm font-semibold text-gray-900">
               {formatDate(chatData.dateRange.end)}
             </p>
           </div>
           
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-600 mb-2">Fastest Responder</p>
-            <p className="text-lg font-semibold text-blue-600">
+          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Fastest Responder</p>
+            <p className="text-sm sm:text-lg font-semibold text-blue-600 truncate">
               {analyticsData.responseTimeAnalysis.fastestResponder}
             </p>
           </div>
           
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-600 mb-2">Top Conversation Starter</p>
-            <p className="text-lg font-semibold text-green-600">
+          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Top Conversation Starter</p>
+            <p className="text-sm sm:text-lg font-semibold text-green-600 truncate">
               {analyticsData.conversationStarters[0]?.name || 'N/A'}
             </p>
           </div>
           
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-600 mb-2">Most Used Emoji</p>
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-xl">{analyticsData.emojiAnalysis.topEmojis[0]?.emoji || '❓'}</span>
-              <span className="text-lg font-semibold text-yellow-600">
+          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Most Used Emoji</p>
+            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+              <span className="text-lg sm:text-xl">{analyticsData.emojiAnalysis.topEmojis[0]?.emoji || '❓'}</span>
+              <span className="text-sm sm:text-lg font-semibold text-yellow-600">
                 {analyticsData.emojiAnalysis.topEmojis[0]?.count || 0}
               </span>
             </div>
           </div>
         </div>
         
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-sm font-medium text-gray-600 mb-4">Participants</p>
+        <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+          <p className="text-sm font-medium text-gray-600 mb-3 sm:mb-4">Participants</p>
           <div className="flex flex-wrap gap-2">
             {chatData.participants.map((participant, index) => {
               const colors = [
@@ -150,7 +150,8 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
               return (
                 <span
                   key={participant}
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colors[index % colors.length]}`}
+                  className={`inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${colors[index % colors.length]} truncate max-w-32 sm:max-w-none`}
+                  title={participant}
                 >
                   {participant}
                 </span>

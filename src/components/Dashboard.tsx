@@ -149,10 +149,13 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => setShowMultiGraph(true)}
-              className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="flex items-center justify-center space-x-2 px-4 py-3 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors touch-manipulation"
             >
               <Grid3X3 className="h-4 w-4" />
-              <span className="font-medium">Compare Time Periods</span>
+              <span className="font-medium text-sm sm:text-base">
+                <span className="hidden sm:inline">Compare Time Periods</span>
+                <span className="sm:hidden">Compare Periods</span>
+              </span>
             </button>
             
             <DateRangePicker
@@ -176,14 +179,14 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
           
           <InsightsPanel analyticsData={analyticsData} chatData={chatData} />
           
-          <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Choose Your Charts
           </h2>
-          <p className="text-gray-600">Select the insights you want to explore</p>
+          <p className="text-sm sm:text-base text-gray-600">Select the insights you want to explore</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {chartOptions.map((option) => {
             const Icon = option.icon;
             const isSelected = selectedCharts.includes(option.id);
@@ -193,29 +196,29 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                 key={option.id}
                 onClick={() => toggleChart(option.id)}
                 className={`
-                  p-4 rounded-lg border-2 transition-colors text-left min-h-[100px] flex flex-col justify-between
+                  p-3 sm:p-4 rounded-lg border-2 transition-colors text-left min-h-[80px] sm:min-h-[100px] flex flex-col justify-between touch-manipulation active:scale-95
                   ${isSelected 
                     ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100'
                   }
                 `}
               >
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className={`p-2 rounded-lg ${
+                  <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-3">
+                    <div className={`p-1.5 sm:p-2 rounded-lg ${
                       isSelected ? 'bg-blue-600' : 'bg-gray-100'
                     }`}>
-                      <Icon className={`h-4 w-4 ${
+                      <Icon className={`h-3 w-3 sm:h-4 sm:w-4 ${
                         isSelected ? 'text-white' : 'text-gray-500'
                       }`} />
                     </div>
-                    <span className={`text-sm font-medium ${
+                    <span className={`text-xs sm:text-sm font-medium leading-tight ${
                       isSelected ? 'text-gray-900' : 'text-gray-700'
                     }`}>
                       {option.name}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">{option.description}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed">{option.description}</p>
                 </div>
               </button>
             );
@@ -223,27 +226,31 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {selectedCharts.map((chartType) => {
           const chartOption = chartOptions.find(opt => opt.id === chartType);
           const Icon = chartOption?.icon;
           
           return (
-            <div key={chartType} className="bg-white rounded-lg p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
+            <div key={chartType} className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                   {Icon && (
-                    <div className="bg-blue-600 p-2 rounded-lg">
-                      <Icon className="h-5 w-5 text-white" />
+                    <div className="bg-blue-600 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </div>
                   )}
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                     {chartOption?.name}
                   </h3>
                 </div>
-                <ChartExplanation chartType={chartType} />
+                <div className="flex-shrink-0">
+                  <ChartExplanation chartType={chartType} />
+                </div>
               </div>
-              {renderChart(chartType)}
+              <div className="overflow-hidden">
+                {renderChart(chartType)}
+              </div>
             </div>
           );
         })}
