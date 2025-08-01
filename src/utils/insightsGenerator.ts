@@ -1,4 +1,4 @@
-import { AnalyticsData, ChatData } from '@/types/chat';
+import { AnalyticsData, ChatData, Message } from '@/types/chat';
 import { isWeekend } from 'date-fns';
 
 export interface Insight {
@@ -14,6 +14,11 @@ export interface Insight {
 export class InsightsGenerator {
   static generateInsights(analyticsData: AnalyticsData, chatData: ChatData): Insight[] {
     const insights: Insight[] = [];
+    
+    // Only generate insights if we have data to analyze
+    if (analyticsData.filteredMessageCount === 0) {
+      return [];
+    }
     
     // Activity Insights
     insights.push(...this.generateActivityInsights(analyticsData));
@@ -41,7 +46,7 @@ export class InsightsGenerator {
     
     // Most active participant with balance analysis
     const topParticipant = analyticsData.messagesByParticipant[0];
-    if (topParticipant) {
+    if (topParticipant && analyticsData.filteredMessageCount > 0) {
       const percentage = Math.round((topParticipant.count / analyticsData.filteredMessageCount) * 100);
       let balanceInsight = '';
       
@@ -67,7 +72,9 @@ export class InsightsGenerator {
     }
 
     // Message volume assessment with benchmarking
-    const avgMessagesPerDay = analyticsData.filteredMessageCount / analyticsData.messagesByDay.length;
+    const avgMessagesPerDay = analyticsData.messagesByDay.length > 0 
+      ? analyticsData.filteredMessageCount / analyticsData.messagesByDay.length 
+      : 0;
     let volumeInsight = '';
     let volumeIcon = '';
     let comparison = '';
@@ -142,9 +149,12 @@ export class InsightsGenerator {
       value: `${hour12}${ampm}`
     });
 
-    // Weekend vs weekday analysis
-    const weekendMessages = this.getWeekendMessageCount(chatData);
-    const weekendPercentage = Math.round((weekendMessages / analyticsData.filteredMessageCount) * 100);
+    // Weekend vs weekday analysis - use filtered messages for accurate calculation
+    const filteredMessages = chatData.messages.filter(m => !m.isSystemMessage);
+    const weekendMessages = this.getWeekendMessageCount(chatData, filteredMessages);
+    const weekendPercentage = analyticsData.filteredMessageCount > 0 
+      ? Math.round((weekendMessages / analyticsData.filteredMessageCount) * 100)
+      : 0;
     
     if (weekendPercentage > 35) {
       insights.push({
@@ -235,7 +245,9 @@ export class InsightsGenerator {
     
     // Emoji usage insights
     const totalEmojis = analyticsData.emojiAnalysis.totalEmojis;
-    const emojiPerMessage = totalEmojis / analyticsData.filteredMessageCount;
+    const emojiPerMessage = analyticsData.filteredMessageCount > 0 
+      ? totalEmojis / analyticsData.filteredMessageCount 
+      : 0;
     
     if (emojiPerMessage > 0.5) {
       insights.push({
@@ -285,8 +297,10 @@ export class InsightsGenerator {
     return insights;
   }
 
-  private static getWeekendMessageCount(chatData: ChatData): number {
-    return chatData.messages.filter(message => 
+  private static getWeekendMessageCount(chatData: ChatData, filteredMessages?: Message[]): number {
+    // Use filtered messages if provided, otherwise use all messages
+    const messagesToAnalyze = filteredMessages || chatData.messages;
+    return messagesToAnalyze.filter(message => 
       !message.isSystemMessage && isWeekend(message.timestamp)
     ).length;
   }

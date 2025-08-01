@@ -109,21 +109,24 @@ export class ChatAnalytics {
 
   private static getAverageMessageLength(messages: Message[]) {
     const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
+    if (nonSystemMessages.length === 0) return 0;
     const totalLength = nonSystemMessages.reduce((sum, m) => sum + m.content.length, 0);
     return Math.round(totalLength / nonSystemMessages.length);
   }
 
   private static getMostActiveDay(messagesByDay: { date: string; count: number }[]) {
+    if (messagesByDay.length === 0) return '';
     return messagesByDay.reduce((max, current) => 
       current.count > max.count ? current : max, 
-      { date: '', count: 0 }
+      messagesByDay[0]
     ).date;
   }
 
   private static getMostActiveHour(messagesByHour: { hour: number; count: number }[]) {
+    if (messagesByHour.length === 0) return 0;
     return messagesByHour.reduce((max, current) => 
       current.count > max.count ? current : max, 
-      { hour: 0, count: 0 }
+      messagesByHour[0]
     ).hour;
   }
 
@@ -131,19 +134,45 @@ export class ChatAnalytics {
     const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
     const responseTimes: { participant: string; responseTimeMinutes: number }[] = [];
     
-    for (let i = 1; i < nonSystemMessages.length; i++) {
-      const currentMessage = nonSystemMessages[i];
-      const previousMessage = nonSystemMessages[i - 1];
+    // Group consecutive messages by the same author
+    const messageGroups: Array<{ author: string; startTime: Date; endTime: Date; count: number }> = [];
+    let currentGroup: { author: string; startTime: Date; endTime: Date; count: number } | null = null;
+    
+    nonSystemMessages.forEach(message => {
+      if (!currentGroup || currentGroup.author !== message.author) {
+        if (currentGroup) {
+          messageGroups.push(currentGroup);
+        }
+        currentGroup = {
+          author: message.author,
+          startTime: message.timestamp,
+          endTime: message.timestamp,
+          count: 1
+        };
+      } else {
+        currentGroup.endTime = message.timestamp;
+        currentGroup.count++;
+      }
+    });
+    
+    if (currentGroup) {
+      messageGroups.push(currentGroup);
+    }
+    
+    // Calculate response times between message groups
+    for (let i = 1; i < messageGroups.length; i++) {
+      const currentGroup = messageGroups[i];
+      const previousGroup = messageGroups[i - 1];
       
       // Only count as response if different participants
-      if (currentMessage.author !== previousMessage.author) {
-        const timeDiff = currentMessage.timestamp.getTime() - previousMessage.timestamp.getTime();
+      if (currentGroup.author !== previousGroup.author) {
+        const timeDiff = currentGroup.startTime.getTime() - previousGroup.endTime.getTime();
         const minutes = timeDiff / (1000 * 60);
         
-        // Only count responses within 24 hours (1440 minutes)
-        if (minutes <= 1440) {
+        // Only count responses within 7 days (10080 minutes) to filter out long gaps
+        if (minutes > 0 && minutes <= 10080) {
           responseTimes.push({
-            participant: currentMessage.author,
+            participant: currentGroup.author,
             responseTimeMinutes: minutes
           });
         }
@@ -164,7 +193,7 @@ export class ChatAnalytics {
     const responseTimesByParticipant = Array.from(participantResponseTimes.entries())
       .map(([name, data]) => ({
         name,
-        avgResponseMinutes: Math.round(data.total / data.count),
+        avgResponseMinutes: data.count > 0 ? Math.round(data.total / data.count) : 0,
         totalResponses: data.count
       }))
       .sort((a, b) => a.avgResponseMinutes - b.avgResponseMinutes);
@@ -173,8 +202,10 @@ export class ChatAnalytics {
       ? Math.round(responseTimes.reduce((sum, r) => sum + r.responseTimeMinutes, 0) / responseTimes.length)
       : 0;
 
-    const fastestResponder = responseTimesByParticipant[0]?.name || 'N/A';
-    const slowestResponder = responseTimesByParticipant[responseTimesByParticipant.length - 1]?.name || 'N/A';
+    const fastestResponder = responseTimesByParticipant.find(p => p.totalResponses > 0)?.name || 'N/A';
+    const slowestResponder = responseTimesByParticipant.length > 0 
+      ? responseTimesByParticipant[responseTimesByParticipant.length - 1]?.name || 'N/A' 
+      : 'N/A';
 
     return {
       averageResponseTimeMinutes,
@@ -188,28 +219,72 @@ export class ChatAnalytics {
     const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
     const conversationStarts = new Map<string, number>();
     
-    // First message is always a conversation starter
-    if (nonSystemMessages.length > 0) {
-      const firstAuthor = nonSystemMessages[0].author;
+    if (nonSystemMessages.length === 0) {
+      return [];
+    }
+    
+    // Group consecutive messages by same author to find conversation boundaries
+    const messageGroups: Array<{ author: string; startTime: Date; endTime: Date; count: number }> = [];
+    let currentGroup: { author: string; startTime: Date; endTime: Date; count: number } | null = null;
+    
+    nonSystemMessages.forEach(message => {
+      if (!currentGroup || currentGroup.author !== message.author) {
+        if (currentGroup) {
+          messageGroups.push(currentGroup);
+        }
+        currentGroup = {
+          author: message.author,
+          startTime: message.timestamp,
+          endTime: message.timestamp,
+          count: 1
+        };
+      } else {
+        currentGroup.endTime = message.timestamp;
+        currentGroup.count++;
+      }
+    });
+    
+    if (currentGroup) {
+      messageGroups.push(currentGroup);
+    }
+    
+    // First group is always a conversation starter
+    if (messageGroups.length > 0) {
+      const firstAuthor = messageGroups[0].author;
       conversationStarts.set(firstAuthor, 1);
     }
     
-    // Look for conversation starters (messages after >30 minute gaps)
-    for (let i = 1; i < nonSystemMessages.length; i++) {
-      const currentMessage = nonSystemMessages[i];
-      const previousMessage = nonSystemMessages[i - 1];
+    // Look for conversation starters based on intelligent gap detection
+    for (let i = 1; i < messageGroups.length; i++) {
+      const currentGroup = messageGroups[i];
+      const previousGroup = messageGroups[i - 1];
       
-      const timeDiff = currentMessage.timestamp.getTime() - previousMessage.timestamp.getTime();
-      const minutes = timeDiff / (1000 * 60);
+      const timeDiff = currentGroup.startTime.getTime() - previousGroup.endTime.getTime();
+      const hours = timeDiff / (1000 * 60 * 60);
       
-      // Consider it a new conversation if >30 minutes gap
-      if (minutes > 30) {
-        const count = conversationStarts.get(currentMessage.author) || 0;
-        conversationStarts.set(currentMessage.author, count + 1);
+      // Dynamic gap threshold based on conversation context
+      let gapThreshold = 2; // Default 2 hours
+      
+      // Use longer threshold during night hours (10 PM - 8 AM)
+      const currentHour = currentGroup.startTime.getHours();
+      const isNightTime = currentHour >= 22 || currentHour <= 8;
+      
+      if (isNightTime) {
+        gapThreshold = 8; // 8 hours during night
+      }
+      
+      // Consider it a new conversation if gap exceeds threshold
+      if (hours >= gapThreshold) {
+        const count = conversationStarts.get(currentGroup.author) || 0;
+        conversationStarts.set(currentGroup.author, count + 1);
       }
     }
 
     const totalStarts = Array.from(conversationStarts.values()).reduce((sum, count) => sum + count, 0);
+    
+    if (totalStarts === 0) {
+      return [];
+    }
     
     return Array.from(conversationStarts.entries())
       .map(([name, count]) => ({
@@ -222,7 +297,8 @@ export class ChatAnalytics {
 
   private static getEmojiAnalysis(messages: Message[]) {
     const nonSystemMessages = messages.filter(m => !m.isSystemMessage);
-    const emojiRegex = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+    // Comprehensive emoji regex covering all Unicode emoji ranges
+    const emojiRegex = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]|[\u{1F004}\u{1F0CF}\u{1F170}\u{1F171}\u{1F17E}\u{1F17F}\u{1F18E}\u{1F191}-\u{1F19A}\u{1F1E6}-\u{1F1FF}\u{1F201}\u{1F202}\u{1F21A}\u{1F22F}\u{1F232}-\u{1F23A}\u{1F250}\u{1F251}\u{1F300}-\u{1F321}\u{1F324}-\u{1F393}\u{1F396}\u{1F397}\u{1F399}-\u{1F39B}\u{1F39E}-\u{1F3F0}\u{1F3F3}-\u{1F3F5}\u{1F3F7}-\u{1F4FD}\u{1F4FF}-\u{1F53D}\u{1F549}-\u{1F54E}\u{1F550}-\u{1F567}\u{1F56F}\u{1F570}\u{1F573}-\u{1F57A}\u{1F587}\u{1F58A}-\u{1F58D}\u{1F590}\u{1F595}\u{1F596}\u{1F5A4}\u{1F5A5}\u{1F5A8}\u{1F5B1}\u{1F5B2}\u{1F5BC}\u{1F5C2}-\u{1F5C4}\u{1F5D1}-\u{1F5D3}\u{1F5DC}-\u{1F5DE}\u{1F5E1}\u{1F5E3}\u{1F5E8}\u{1F5EF}\u{1F5F3}\u{1F5FA}-\u{1F64F}\u{1F680}-\u{1F6C5}\u{1F6CB}-\u{1F6D2}\u{1F6D5}-\u{1F6D7}\u{1F6E0}-\u{1F6E5}\u{1F6E9}\u{1F6EB}\u{1F6EC}\u{1F6F0}\u{1F6F3}-\u{1F6FC}\u{1F7E0}-\u{1F7EB}]|[\u{1F90C}-\u{1F93A}\u{1F93C}-\u{1F945}\u{1F947}-\u{1F978}\u{1F97A}-\u{1F9CB}\u{1F9CD}-\u{1F9FF}\u{1FA70}-\u{1FA74}\u{1FA78}-\u{1FA7A}\u{1FA80}-\u{1FA86}\u{1FA90}-\u{1FAA8}\u{1FAB0}-\u{1FAB6}\u{1FAC0}-\u{1FAC2}\u{1FAD0}-\u{1FAD6}]/gu;
     
     const allEmojis: string[] = [];
     const emojisByParticipant = new Map<string, number>();
