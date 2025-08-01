@@ -27,7 +27,7 @@ export default function StatsCards({ analyticsData, chatData }: StatsCardsProps)
   const stats = [
     {
       name: 'Communication Volume',
-      value: chatData.totalMessages.toLocaleString(),
+      value: analyticsData.filteredMessageCount.toLocaleString(),
       icon: MessageCircle,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'

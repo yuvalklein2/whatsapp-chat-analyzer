@@ -16,7 +16,6 @@ import DateRangePicker from './DateRangePicker';
 import MultiGraphManager from './MultiGraphManager';
 import InsightsPanel from './InsightsPanel';
 import ChartExplanation from './ChartExplanation';
-import KeyTakeaways from './KeyTakeaways';
 import ExecutiveSummary from './ExecutiveSummary';
 
 interface DashboardProps {
@@ -145,19 +144,15 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
                     : 'Analytics Deep Dive'
                 }
               </h1>
-              <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <div className="mt-3">
                 <p className="text-slate-600">
                   {showMultiGraph 
                     ? 'Comparative insights across multiple time periods'
                     : viewMode === 'executive'
                       ? 'Key insights and team health at a glance'
-                      : `Analyzing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} total communications`
+                      : `Analyzing ${analyticsData.filteredMessageCount.toLocaleString()} messages in selected period`
                   }
                 </p>
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Live Data</span>
-                </div>
               </div>
             </div>
             
@@ -226,96 +221,74 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         <>
           <StatsCards analyticsData={analyticsData} chatData={chatData} />
           
-          <KeyTakeaways analyticsData={analyticsData} chatData={chatData} />
-          
-          <InsightsPanel analyticsData={analyticsData} chatData={chatData} />
-          
-          <div className="bg-slate-900 rounded-xl p-6 sm:p-8 border border-slate-700 shadow-xl">
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
-            Analytics Configuration
-          </h2>
-          <p className="text-slate-300">Configure your executive dashboard with relevant performance metrics</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          {chartOptions.map((option) => {
-            const Icon = option.icon;
-            const isSelected = selectedCharts.includes(option.id);
-            
-            return (
-              <button
-                key={option.id}
-                onClick={() => toggleChart(option.id)}
-                className={`
-                  p-4 sm:p-5 rounded-lg border-2 transition-all duration-200 text-left min-h-[90px] sm:min-h-[110px] flex flex-col justify-between touch-manipulation hover:scale-105
-                  ${isSelected 
-                    ? 'border-blue-500 bg-slate-800 shadow-lg' 
-                    : 'border-slate-600 bg-slate-700 hover:border-blue-400 hover:bg-slate-600 active:bg-slate-800'
-                  }
-                `}
-              >
-                <div className="flex-1 flex flex-col">
-                  <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-3">
-                    <div className={`p-2 rounded-lg ${
-                      isSelected ? 'bg-blue-600 shadow-lg' : 'bg-slate-600'
-                    }`}>
-                      <Icon className={`h-4 w-4 ${
-                        isSelected ? 'text-white' : 'text-slate-300'
-                      }`} />
-                    </div>
-                    <span className={`text-sm font-semibold leading-tight ${
-                      isSelected ? 'text-white' : 'text-slate-200'
-                    }`}>
-                      {option.name}
-                    </span>
-                  </div>
-                  <p className={`text-xs leading-relaxed ${
-                    isSelected ? 'text-slate-300' : 'text-slate-400'
-                  }`}>{option.description}</p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {selectedCharts.map((chartType) => {
-          const chartOption = chartOptions.find(opt => opt.id === chartType);
-          const Icon = chartOption?.icon;
-          
-          return (
-            <div key={chartType} className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  {Icon && (
-                    <div className="bg-blue-600 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                    </div>
-                  )}
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                    {chartOption?.name}
-                  </h3>
-                </div>
-                <div className="flex-shrink-0">
-                  <ChartExplanation chartType={chartType} />
-                </div>
-              </div>
-              <div className="overflow-hidden">
-                {renderChart(chartType)}
-              </div>
+          {/* Simplified Chart Selection */}
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Analytics Views</h2>
+            <div className="flex flex-wrap gap-2">
+              {chartOptions.map((option) => {
+                const Icon = option.icon;
+                const isSelected = selectedCharts.includes(option.id);
+                
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => toggleChart(option.id)}
+                    className={`
+                      flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                      ${isSelected 
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }
+                    `}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{option.name}</span>
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          </div>
 
-          {selectedCharts.length === 0 && (
-            <div className="bg-white rounded-lg p-12 text-center border border-gray-200">
-              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Charts Selected</h3>
-              <p className="text-gray-600">Choose chart types above to explore your conversation insights.</p>
+          {/* Charts Grid */}
+          {selectedCharts.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {selectedCharts.map((chartType) => {
+                const chartOption = chartOptions.find(opt => opt.id === chartType);
+                const Icon = chartOption?.icon;
+                
+                return (
+                  <div key={chartType} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        {Icon && (
+                          <div className="bg-blue-50 p-2 rounded-lg">
+                            <Icon className="h-5 w-5 text-blue-600" />
+                          </div>
+                        )}
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {chartOption?.name}
+                        </h3>
+                      </div>
+                      <ChartExplanation chartType={chartType} />
+                    </div>
+                    <div className="overflow-hidden">
+                      {renderChart(chartType)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
+
+          {selectedCharts.length === 0 && (
+            <div className="bg-white rounded-xl p-12 text-center border border-gray-200 shadow-sm">
+              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Analytics to View</h3>
+              <p className="text-gray-600">Choose from the analytics views above to explore your data</p>
+            </div>
+          )}
+
+          <InsightsPanel analyticsData={analyticsData} chatData={chatData} />
         </>
       )}
     </div>
