@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AnalyticsData, ChatData, DateRange } from '@/types/chat';
 import { ChatAnalytics } from '@/utils/analytics';
-import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile, Grid3X3, ChevronLeft } from 'lucide-react';
+import { BarChart3, Clock, Calendar, Users, MessageSquare, Timer, Zap, Smile, Grid3X3, ChevronLeft, BarChart, User } from 'lucide-react';
 import MessagesByDayChart from './charts/MessagesByDayChart';
 import MessagesByHourChart from './charts/MessagesByHourChart';
 import MessagesByParticipantChart from './charts/MessagesByParticipantChart';
@@ -17,6 +17,7 @@ import MultiGraphManager from './MultiGraphManager';
 import InsightsPanel from './InsightsPanel';
 import ChartExplanation from './ChartExplanation';
 import KeyTakeaways from './KeyTakeaways';
+import ExecutiveSummary from './ExecutiveSummary';
 
 interface DashboardProps {
   analyticsData: AnalyticsData;
@@ -82,6 +83,7 @@ const chartOptions: ChartOption[] = [
 export default function Dashboard({ analyticsData, chatData, selectedDateRange, onDateRangeChange }: DashboardProps) {
   const [selectedCharts, setSelectedCharts] = useState<ChartType[]>(['messagesByDay', 'responseTime', 'conversationStarters']);
   const [showMultiGraph, setShowMultiGraph] = useState(false);
+  const [viewMode, setViewMode] = useState<'executive' | 'analyst'>('executive');
   
   const dateRangePresets = ChatAnalytics.getDateRangePresets(chatData);
 
@@ -133,36 +135,77 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         
         {/* Title section */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-            {showMultiGraph ? 'Performance Comparison Analysis' : 'Executive Communication Dashboard'}
-          </h1>
-          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <p className="text-slate-600">
-              {showMultiGraph 
-                ? 'Comparative insights across multiple time periods'
-                : `Analyzing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} total communications`
-              }
-            </p>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Live Data</span>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+                {showMultiGraph 
+                  ? 'Performance Comparison Analysis' 
+                  : viewMode === 'executive' 
+                    ? 'Executive Dashboard' 
+                    : 'Analytics Deep Dive'
+                }
+              </h1>
+              <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <p className="text-slate-600">
+                  {showMultiGraph 
+                    ? 'Comparative insights across multiple time periods'
+                    : viewMode === 'executive'
+                      ? 'Key insights and team health at a glance'
+                      : `Analyzing ${analyticsData.filteredMessageCount.toLocaleString()} of ${analyticsData.totalMessageCount.toLocaleString()} total communications`
+                  }
+                </p>
+                <div className="flex items-center gap-2 text-sm text-slate-500">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Live Data</span>
+                </div>
+              </div>
             </div>
+            
+            {/* View Mode Toggle */}
+            {!showMultiGraph && (
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('executive')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === 'executive'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <User className="h-4 w-4" />
+                  <span>Executive</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('analyst')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === 'analyst'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <BarChart className="h-4 w-4" />
+                  <span>Analyst</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
         
         {/* Action buttons */}
         {!showMultiGraph && (
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-            <button
-              onClick={() => setShowMultiGraph(true)}
-              className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 active:from-slate-900 active:to-black focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 touch-manipulation shadow-lg"
-            >
-              <Grid3X3 className="h-4 w-4" />
-              <span className="font-medium text-sm">
-                <span className="hidden sm:inline">Comparative Analysis</span>
-                <span className="sm:hidden">Compare</span>
-              </span>
-            </button>
+            {viewMode === 'analyst' && (
+              <button
+                onClick={() => setShowMultiGraph(true)}
+                className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 active:from-slate-900 active:to-black focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 touch-manipulation shadow-lg"
+              >
+                <Grid3X3 className="h-4 w-4" />
+                <span className="font-medium text-sm">
+                  <span className="hidden sm:inline">Comparative Analysis</span>
+                  <span className="sm:hidden">Compare</span>
+                </span>
+              </button>
+            )}
             
             <DateRangePicker
               selectedRange={selectedDateRange}
@@ -177,6 +220,8 @@ export default function Dashboard({ analyticsData, chatData, selectedDateRange, 
         <MultiGraphManager 
           chatData={chatData} 
         />
+      ) : viewMode === 'executive' ? (
+        <ExecutiveSummary analyticsData={analyticsData} chatData={chatData} />
       ) : (
         <>
           <StatsCards analyticsData={analyticsData} chatData={chatData} />
