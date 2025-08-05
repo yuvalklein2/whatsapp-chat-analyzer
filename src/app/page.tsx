@@ -204,7 +204,7 @@ export default function HomePage() {
                       <p className="text-sm text-slate-600">Team Performance Analysis</p>
                     </div>
                   </div>
-                  <p className="text-slate-700 text-sm italic">"Reduced response time by 40% after identifying communication bottlenecks in our support team."</p>
+                  <p className="text-slate-700 text-sm italic">&ldquo;Reduced response time by 40% after identifying communication bottlenecks in our support team.&rdquo;</p>
                 </div>
                 
                 <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
@@ -217,7 +217,7 @@ export default function HomePage() {
                       <p className="text-sm text-slate-600">Sprint Retrospectives</p>
                     </div>
                   </div>
-                  <p className="text-slate-700 text-sm italic">"Perfect for quarterly reviews. Shows exactly where team collaboration needs improvement."</p>
+                  <p className="text-slate-700 text-sm italic">&ldquo;Perfect for quarterly reviews. Shows exactly where team collaboration needs improvement.&rdquo;</p>
                 </div>
                 
                 <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
@@ -230,7 +230,7 @@ export default function HomePage() {
                       <p className="text-sm text-slate-600">Efficiency Optimization</p>
                     </div>
                   </div>
-                  <p className="text-slate-700 text-sm italic">"Data-driven insights helped us identify peak communication hours and adjust schedules accordingly."</p>
+                  <p className="text-slate-700 text-sm italic">&ldquo;Data-driven insights helped us identify peak communication hours and adjust schedules accordingly.&rdquo;</p>
                 </div>
                 
                 <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
@@ -243,14 +243,14 @@ export default function HomePage() {
                       <p className="text-sm text-slate-600">Client Reporting</p>
                     </div>
                   </div>
-                  <p className="text-slate-700 text-sm italic">"Professional reports that clients love. Saves hours of manual analysis work."</p>
+                  <p className="text-slate-700 text-sm italic">&ldquo;Professional reports that clients love. Saves hours of manual analysis work.&rdquo;</p>
                 </div>
               </div>
             </div>
             
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 sm:p-12 shadow-2xl text-white">
               <div className="text-center mb-8">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-4">What You'll Discover</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">What You&rsquo;ll Discover</h3>
                 <p className="text-blue-100 text-lg max-w-2xl mx-auto">Comprehensive analytics suite designed for business professionals</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -294,7 +294,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-3">Is my data secure and private?</h4>
-                  <p className="text-slate-600 text-sm mb-6">Yes, absolutely. All processing happens locally in your browser. Your chat data never leaves your device and isn't stored on our servers.</p>
+                  <p className="text-slate-600 text-sm mb-6">Yes, absolutely. All processing happens locally in your browser. Your chat data never leaves your device and isn&rsquo;t stored on our servers.</p>
                   
                   <h4 className="font-semibold text-slate-900 mb-3">What file formats are supported?</h4>
                   <p className="text-slate-600 text-sm mb-6">We support standard WhatsApp export files (.txt) and ZIP archives containing multiple chat exports. Both individual and group chats are supported.</p>
